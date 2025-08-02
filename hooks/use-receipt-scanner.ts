@@ -10,6 +10,7 @@ interface ScannedItem {
 export function useReceiptScanner() {
   const [isScanning, setIsScanning] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
   const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -20,6 +21,7 @@ export function useReceiptScanner() {
     try {
       setError(null);
       setScannedItems([]); // Clear previous results
+      setIsInitializing(true);
 
       // Check if mediaDevices is supported
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -30,15 +32,36 @@ export function useReceiptScanner() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment", // Use back camera
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
+          width: { ideal: 1280, max: 1920 },
+          height: { ideal: 720, max: 1080 },
+          aspectRatio: { ideal: 16/9 },
         },
       });
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
-        setIsScanning(true);
+        
+        // Wait for video to load before showing camera view
+        videoRef.current.onloadedmetadata = () => {
+          console.log('Video metadata loaded, showing camera view');
+          setIsInitializing(false);
+          setIsScanning(true);
+        };
+        
+        videoRef.current.onerror = (error) => {
+          console.error('Video error:', error);
+          setError('Failed to load camera video');
+        };
+        
+        // Fallback in case onloadedmetadata doesn't fire
+        setTimeout(() => {
+          if (!isScanning) {
+            console.log('Fallback: showing camera view after timeout');
+            setIsInitializing(false);
+            setIsScanning(true);
+          }
+        }, 1000);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
@@ -133,6 +156,7 @@ export function useReceiptScanner() {
   return {
     isScanning,
     isProcessing,
+    isInitializing,
     scannedItems,
     error,
     videoRef,

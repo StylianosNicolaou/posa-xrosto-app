@@ -24,6 +24,7 @@ export function ReceiptScanner({
   const {
     isScanning,
     isProcessing,
+    isInitializing,
     scannedItems,
     error,
     videoRef,
@@ -85,6 +86,30 @@ export function ReceiptScanner({
     );
   }
 
+  if (isInitializing) {
+    return (
+      <div className="fixed inset-0 bg-black z-50 flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center text-white">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+            <p className="text-lg">Initializing camera...</p>
+            <p className="text-sm text-gray-300 mt-2">Please wait</p>
+          </div>
+        </div>
+        <div className="p-4 bg-white">
+          <Button
+            onClick={handleClose}
+            variant="outline"
+            className="w-full bg-transparent"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   if (isScanning) {
     return (
       <div className="fixed inset-0 bg-black z-50 flex flex-col">
@@ -93,7 +118,12 @@ export function ReceiptScanner({
             ref={videoRef}
             autoPlay
             playsInline
+            muted
             className="w-full h-full object-cover"
+            style={{ 
+              transform: 'scaleX(-1)', // Mirror the video for better UX
+              backgroundColor: '#000'
+            }}
           />
           <canvas ref={canvasRef} className="hidden" />
 
