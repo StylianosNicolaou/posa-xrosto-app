@@ -23,58 +23,14 @@ export function useReceiptScanner() {
       setScannedItems([]); // Clear previous results
       setIsInitializing(true);
 
-      // Check if mediaDevices is supported
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        setError("Camera not supported in this browser");
-        return;
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: "environment", // Use back camera
-        },
-      });
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        streamRef.current = stream;
-        
-        // Simple approach - show camera immediately
+      // Simple approach - just show the file input interface
+      setTimeout(() => {
         setIsInitializing(false);
         setIsScanning(true);
-        
-        // Wait for video to load
-        videoRef.current.onloadedmetadata = () => {
-          console.log('Video metadata loaded');
-        };
-        
-        videoRef.current.oncanplay = () => {
-          console.log('Video can play');
-        };
-        
-        videoRef.current.onerror = (error) => {
-          console.error('Video error:', error);
-          setError('Failed to load camera video');
-        };
-        
-        // Force video to play
-        setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.play().catch(console.error);
-          }
-        }, 100);
-      }
+      }, 500);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      if (errorMessage.includes("Permission")) {
-        setError(
-          "Camera access denied. Please allow camera permissions and try again."
-        );
-      } else if (errorMessage.includes("NotFound")) {
-        setError("No camera found on this device.");
-      } else {
-        setError("Failed to access camera. Please check your device settings.");
-      }
+      setError("Failed to initialize camera interface.");
       console.error("Camera error:", err);
     }
   }, []);
@@ -144,15 +100,14 @@ export function useReceiptScanner() {
     }
   }, []);
 
-  const scanReceipt = useCallback(async () => {
-    const imageData = captureImage();
+  const scanReceipt = useCallback(async (imageData?: string) => {
     if (!imageData) {
-      setError("Failed to capture image");
+      setError("No image data provided");
       return [];
     }
 
     return await processReceipt(imageData);
-  }, [captureImage, processReceipt]);
+  }, [processReceipt]);
 
   return {
     isScanning,

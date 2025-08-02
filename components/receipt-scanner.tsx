@@ -113,70 +113,90 @@ export function ReceiptScanner({
   if (isScanning) {
     return (
       <div className="fixed inset-0 bg-black z-50 flex flex-col">
-        <div className="flex-1 relative bg-black flex items-center justify-center">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            controls={false}
-            className="w-full h-full object-cover"
-            style={{ 
-              backgroundColor: '#000',
-              minHeight: '100%',
-              minWidth: '100%'
-            }}
-          />
-          <canvas ref={canvasRef} className="hidden" />
-
-          {/* Debug info - remove in production */}
-          <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
-            Camera Active
-          </div>
-          <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
-            <button 
-              onClick={() => {
-                if (videoRef.current) {
-                  videoRef.current.style.display = 'block';
-                  videoRef.current.style.visibility = 'visible';
-                  videoRef.current.style.opacity = '1';
-                  videoRef.current.play().catch(console.error);
-                }
-              }}
-              className="bg-blue-500 px-2 py-1 rounded text-xs"
-            >
-              Force Show
-            </button>
-          </div>
-
-          {/* Scanning overlay */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-80 h-60 border-2 border-cyan-400 rounded-lg relative">
-              <div className="absolute inset-0 bg-cyan-400/10 rounded-lg"></div>
-              <ScanLine className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-cyan-400" />
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center text-white max-w-md">
+            <div className="mb-6">
+              <Camera className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
+              <h2 className="text-xl font-bold mb-2">Take a Photo</h2>
+              <p className="text-gray-300 mb-6">
+                Take a clear photo of your receipt to scan it automatically
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <Button
+                onClick={() => {
+                  // Trigger file input
+                  const fileInput = document.createElement('input');
+                  fileInput.type = 'file';
+                  fileInput.accept = 'image/*';
+                  fileInput.capture = 'environment';
+                  fileInput.onchange = async (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = async (e) => {
+                        const imageData = e.target?.result as string;
+                        if (imageData) {
+                          const items = await scanReceipt(imageData);
+                          if (items.length > 0) {
+                            onItemsScanned(items);
+                          }
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  };
+                  fileInput.click();
+                }}
+                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3"
+              >
+                <Camera className="w-5 h-5 mr-2" />
+                Take Photo
+              </Button>
+              
+              <Button
+                onClick={() => {
+                  // Trigger file input for gallery
+                  const fileInput = document.createElement('input');
+                  fileInput.type = 'file';
+                  fileInput.accept = 'image/*';
+                  fileInput.onchange = async (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = async (e) => {
+                        const imageData = e.target?.result as string;
+                        if (imageData) {
+                          const items = await scanReceipt(imageData);
+                          if (items.length > 0) {
+                            onItemsScanned(items);
+                          }
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  };
+                  fileInput.click();
+                }}
+                variant="outline"
+                className="w-full bg-transparent text-white border-white hover:bg-white hover:text-black"
+              >
+                Choose from Gallery
+              </Button>
             </div>
           </div>
         </div>
 
         <div className="p-4 bg-white">
-          <div className="flex gap-2">
-            <Button
-              onClick={handleClose}
-              variant="outline"
-              className="flex-1 bg-transparent"
-            >
-              <X className="w-4 h-4 mr-2" />
-              Cancel
-            </Button>
-            <Button
-              onClick={handleScan}
-              disabled={isProcessing}
-              className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white disabled:opacity-50"
-            >
-              <Camera className="w-4 h-4 mr-2" />
-              {isProcessing ? "Processing..." : "Capture & Scan"}
-            </Button>
-          </div>
+          <Button
+            onClick={handleClose}
+            variant="outline"
+            className="w-full bg-transparent"
+          >
+            <X className="w-4 h-4 mr-2" />
+            Cancel
+          </Button>
         </div>
       </div>
     );
