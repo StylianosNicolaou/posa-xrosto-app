@@ -32,9 +32,8 @@ export function useReceiptScanner() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment", // Use back camera
-          width: { ideal: 1280, max: 1920 },
-          height: { ideal: 720, max: 1080 },
-          aspectRatio: { ideal: 16/9 },
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 },
         },
       });
 
@@ -49,19 +48,34 @@ export function useReceiptScanner() {
           setIsScanning(true);
         };
         
+        videoRef.current.oncanplay = () => {
+          console.log('Video can play, showing camera view');
+          setIsInitializing(false);
+          setIsScanning(true);
+        };
+        
         videoRef.current.onerror = (error) => {
           console.error('Video error:', error);
           setError('Failed to load camera video');
+          setIsInitializing(false);
         };
         
-        // Fallback in case onloadedmetadata doesn't fire
+        // Fallback in case events don't fire
         setTimeout(() => {
-          if (!isScanning) {
+          if (!isScanning && !error) {
             console.log('Fallback: showing camera view after timeout');
             setIsInitializing(false);
             setIsScanning(true);
           }
-        }, 1000);
+        }, 2000);
+
+        // Force video to play on mobile
+        setTimeout(() => {
+          if (videoRef.current && videoRef.current.paused) {
+            console.log('Forcing video to play');
+            videoRef.current.play().catch(console.error);
+          }
+        }, 500);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";

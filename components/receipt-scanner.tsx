@@ -119,13 +119,25 @@ export function ReceiptScanner({
             autoPlay
             playsInline
             muted
+            controls={false}
             className="w-full h-full object-cover"
             style={{ 
-              transform: 'scaleX(-1)', // Mirror the video for better UX
-              backgroundColor: '#000'
+              backgroundColor: '#000',
+              minHeight: '100%',
+              minWidth: '100%',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0
             }}
           />
           <canvas ref={canvasRef} className="hidden" />
+
+          {/* Debug info - remove in production */}
+          <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
+            Camera Active
+          </div>
 
           {/* Scanning overlay */}
           <div className="absolute inset-0 flex items-center justify-center">
