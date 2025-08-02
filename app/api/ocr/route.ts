@@ -227,17 +227,28 @@ function extractDate(text: string): string | undefined {
 export async function POST(request: NextRequest) {
   try {
     const { imageData } = await request.json();
-
+    
     if (!imageData) {
       return NextResponse.json(
         { error: "No image data provided" },
         { status: 400 }
       );
     }
-
+    
+    // Check if credentials are available
+    if (!process.env.GOOGLE_CLOUD_CREDENTIALS && !process.env.GOOGLE_CLOUD_KEY_FILE) {
+      console.error("No Google Cloud credentials found");
+      return NextResponse.json(
+        { error: "OCR service not configured. Please check environment variables." },
+        { status: 500 }
+      );
+    }
+    
     // Remove data URL prefix if present
     const base64Image = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
-
+    
+    console.log("Starting OCR processing...");
+    
     // Perform OCR on the image
     const [result] = await client.textDetection({
       image: {
@@ -285,11 +296,14 @@ export async function POST(request: NextRequest) {
       data: receiptData,
       rawText: fullText,
     });
-  } catch (error) {
+    } catch (error) {
     console.error("OCR processing error:", error);
-
+    
     // Handle specific Google Cloud errors
     if (error instanceof Error) {
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+      
       if (error.message.includes("authentication")) {
         return NextResponse.json(
           {
@@ -305,8 +319,14 @@ export async function POST(request: NextRequest) {
           { status: 429 }
         );
       }
+      if (error.message.includes("credentials")) {
+        return NextResponse.json(
+          { error: "Google Cloud credentials not found. Please check environment variables." },
+          { status: 500 }
+        );
+      }
     }
-
+    
     return NextResponse.json(
       {
         error:
