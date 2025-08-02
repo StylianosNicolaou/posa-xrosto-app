@@ -32,8 +32,6 @@ export function useReceiptScanner() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: "environment", // Use back camera
-          width: { ideal: 640, max: 1280 },
-          height: { ideal: 480, max: 720 },
         },
       });
 
@@ -41,41 +39,30 @@ export function useReceiptScanner() {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
         
-        // Wait for video to load before showing camera view
+        // Simple approach - show camera immediately
+        setIsInitializing(false);
+        setIsScanning(true);
+        
+        // Wait for video to load
         videoRef.current.onloadedmetadata = () => {
-          console.log('Video metadata loaded, showing camera view');
-          setIsInitializing(false);
-          setIsScanning(true);
+          console.log('Video metadata loaded');
         };
         
         videoRef.current.oncanplay = () => {
-          console.log('Video can play, showing camera view');
-          setIsInitializing(false);
-          setIsScanning(true);
+          console.log('Video can play');
         };
         
         videoRef.current.onerror = (error) => {
           console.error('Video error:', error);
           setError('Failed to load camera video');
-          setIsInitializing(false);
         };
         
-        // Fallback in case events don't fire
+        // Force video to play
         setTimeout(() => {
-          if (!isScanning && !error) {
-            console.log('Fallback: showing camera view after timeout');
-            setIsInitializing(false);
-            setIsScanning(true);
-          }
-        }, 2000);
-
-        // Force video to play on mobile
-        setTimeout(() => {
-          if (videoRef.current && videoRef.current.paused) {
-            console.log('Forcing video to play');
+          if (videoRef.current) {
             videoRef.current.play().catch(console.error);
           }
-        }, 500);
+        }, 100);
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Unknown error";

@@ -113,7 +113,7 @@ export function ReceiptScanner({
   if (isScanning) {
     return (
       <div className="fixed inset-0 bg-black z-50 flex flex-col">
-        <div className="flex-1 relative">
+        <div className="flex-1 relative bg-black flex items-center justify-center">
           <video
             ref={videoRef}
             autoPlay
@@ -124,12 +124,7 @@ export function ReceiptScanner({
             style={{ 
               backgroundColor: '#000',
               minHeight: '100%',
-              minWidth: '100%',
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0
+              minWidth: '100%'
             }}
           />
           <canvas ref={canvasRef} className="hidden" />
@@ -137,6 +132,21 @@ export function ReceiptScanner({
           {/* Debug info - remove in production */}
           <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
             Camera Active
+          </div>
+          <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white text-xs p-2 rounded">
+            <button 
+              onClick={() => {
+                if (videoRef.current) {
+                  videoRef.current.style.display = 'block';
+                  videoRef.current.style.visibility = 'visible';
+                  videoRef.current.style.opacity = '1';
+                  videoRef.current.play().catch(console.error);
+                }
+              }}
+              className="bg-blue-500 px-2 py-1 rounded text-xs"
+            >
+              Force Show
+            </button>
           </div>
 
           {/* Scanning overlay */}
