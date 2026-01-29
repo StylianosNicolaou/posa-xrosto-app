@@ -1,69 +1,29 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 interface ScannedItem {
   name: string;
   price: number;
 }
 
+type ScannerStatus = "idle" | "processing" | "success" | "error";
+
 export function useReceiptScanner() {
-  const [isScanning, setIsScanning] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
+  const [status, setStatus] = useState<ScannerStatus>("idle");
   const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
 
-  const startCamera = useCallback(async () => {
-    try {
-      setError(null);
-      setScannedItems([]); // Clear previous results
-      setIsInitializing(true);
-
-      // Simple approach - just show the file input interface
-      setTimeout(() => {
-        setIsInitializing(false);
-        setIsScanning(true);
-      }, 500);
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Unknown error";
-      setError("Failed to initialize camera interface.");
-      console.error("Camera error:", err);
-    }
+  const reset = useCallback(() => {
+    setStatus("idle");
+    setScannedItems([]);
+    setError(null);
   }, []);
 
-  const stopCamera = useCallback(() => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    setIsScanning(false);
-  }, []);
-
-  const captureImage = useCallback(() => {
-    if (!videoRef.current || !canvasRef.current) return null;
-
-    const canvas = canvasRef.current;
-    const video = videoRef.current;
-    const context = canvas.getContext("2d");
-
-    if (!context) return null;
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0);
-
-    return canvas.toDataURL("image/jpeg", 0.8);
-  }, []);
-
-  // Real OCR processing using Google Cloud Vision API
   const processReceipt = useCallback(async (imageData: string) => {
     try {
       setError(null);
-      setIsProcessing(true);
+      setStatus("processing");
 
       const response = await fetch("/api/ocr", {
         method: "POST",
@@ -83,43 +43,33 @@ export function useReceiptScanner() {
         throw new Error("Invalid response from OCR service");
       }
 
-      const items: ScannedItem[] = result.data.items.map((item: any) => ({
+      const items: ScannedItem[] = result.data.items.map((item: { name: string; price: number }) => ({
         name: item.name,
         price: item.price,
       }));
 
+      if (items.length === 0) {
+        throw new Error("No items found in the receipt");
+      }
+
       setScannedItems(items);
-      setIsProcessing(false);
+      setStatus("success");
       return items;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to process receipt";
       setError(errorMessage);
-      setIsProcessing(false);
+      setStatus("error");
       return [];
     }
   }, []);
 
-  const scanReceipt = useCallback(async (imageData?: string) => {
-    if (!imageData) {
-      setError("No image data provided");
-      return [];
-    }
-
-    return await processReceipt(imageData);
-  }, [processReceipt]);
-
   return {
-    isScanning,
-    isProcessing,
-    isInitializing,
+    status,
     scannedItems,
     error,
-    videoRef,
-    canvasRef,
-    startCamera,
-    stopCamera,
-    scanReceipt,
+    processReceipt,
+    reset,
     setScannedItems,
   };
 }

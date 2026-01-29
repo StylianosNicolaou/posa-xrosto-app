@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useReceiptScanner } from "@/hooks/use-receipt-scanner";
-import { Camera, X, Check, ScanLine } from "lucide-react";
+import { Camera, X, Check, Loader2, AlertCircle, ImageIcon } from "lucide-react";
 
 interface ReceiptScannerProps {
   onItemsScanned: (items: { name: string; price: number }[]) => void;
@@ -22,48 +23,154 @@ export function ReceiptScanner({
   onClose,
 }: ReceiptScannerProps) {
   const {
-    isScanning,
-    isProcessing,
-    isInitializing,
+    status,
     scannedItems,
     error,
-    videoRef,
-    canvasRef,
-    startCamera,
-    stopCamera,
-    scanReceipt,
+    processReceipt,
+    reset,
   } = useReceiptScanner();
 
-  const handleScan = async () => {
-    const items = await scanReceipt();
-    if (items.length > 0) {
-      onItemsScanned(items);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-trigger camera on mount for mobile-first experience
+  useEffect(() => {
+    // Small delay to ensure component is mounted
+    const timer = setTimeout(() => {
+      if (cameraInputRef.current && status === "idle") {
+        cameraInputRef.current.click();
+      }
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [status]);
+
+  const handleFileSelect = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const imageData = e.target?.result as string;
+      if (imageData) {
+        await processReceipt(imageData);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
     }
+    // Reset the input so the same file can be selected again
+    e.target.value = "";
   };
 
   const handleClose = () => {
-    stopCamera();
+    reset();
     onClose();
   };
 
-  if (!isScanning && scannedItems.length === 0) {
+  const handleRetry = () => {
+    reset();
+    // Trigger camera again after reset
+    setTimeout(() => {
+      cameraInputRef.current?.click();
+    }, 100);
+  };
+
+  const handleAddItems = () => {
+    onItemsScanned(scannedItems);
+    handleClose();
+  };
+
+  // Hidden file inputs
+  const fileInputs = (
+    <>
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={handleInputChange}
+        className="hidden"
+        aria-label="Take photo of receipt"
+      />
+      <input
+        ref={galleryInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleInputChange}
+        className="hidden"
+        aria-label="Choose receipt from gallery"
+      />
+    </>
+  );
+
+  // Processing state - show loading indicator
+  if (status === "processing") {
     return (
       <Card className="w-full max-w-md mx-auto bg-white border-2 border-cyan-200">
+        {fileInputs}
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center">
-            <Camera className="w-8 h-8 text-white" />
+            <Loader2 className="w-8 h-8 text-white animate-spin" />
           </div>
-          <CardTitle className="text-xl text-eerie-800">Scan Receipt</CardTitle>
+          <CardTitle className="text-xl text-eerie-800">Processing Receipt</CardTitle>
           <CardDescription className="text-eerie-600">
-            Use your camera to scan a receipt and automatically add items
+            Analyzing your receipt with OCR...
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex justify-center">
+              <div className="flex gap-1">
+                <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              </div>
+            </div>
+            <p className="text-center text-sm text-eerie-600">
+              This may take a few seconds
+            </p>
+            <Button
+              onClick={handleClose}
+              variant="outline"
+              className="w-full bg-transparent"
+            >
+              <X className="w-4 h-4 mr-2" />
+              Cancel
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Error state
+  if (status === "error") {
+    return (
+      <Card className="w-full max-w-md mx-auto bg-white border-2 border-red-200">
+        {fileInputs}
+        <CardHeader className="text-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-white" />
+          </div>
+          <CardTitle className="text-xl text-eerie-800">Scan Failed</CardTitle>
+          <CardDescription className="text-red-600">
+            {error || "Failed to process receipt"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-sm text-red-700">{error}</p>
-            </div>
-          )}
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-700">
+              <strong>Tips for better results:</strong>
+            </p>
+            <ul className="text-sm text-red-600 mt-2 list-disc list-inside space-y-1">
+              <li>Ensure good lighting</li>
+              <li>Hold the camera steady</li>
+              <li>Include the entire receipt</li>
+              <li>Avoid shadows and glare</li>
+            </ul>
+          </div>
           <div className="flex gap-2">
             <Button
               onClick={handleClose}
@@ -74,11 +181,11 @@ export function ReceiptScanner({
               Cancel
             </Button>
             <Button
-              onClick={startCamera}
+              onClick={handleRetry}
               className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white"
             >
               <Camera className="w-4 h-4 mr-2" />
-              Start Camera
+              Try Again
             </Button>
           </div>
         </CardContent>
@@ -86,133 +193,19 @@ export function ReceiptScanner({
     );
   }
 
-  if (isInitializing) {
-    return (
-      <div className="fixed inset-0 bg-black z-50 flex flex-col">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center text-white">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
-            <p className="text-lg">Initializing camera...</p>
-            <p className="text-sm text-gray-300 mt-2">Please wait</p>
-          </div>
-        </div>
-        <div className="p-4 bg-white">
-          <Button
-            onClick={handleClose}
-            variant="outline"
-            className="w-full bg-transparent"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (isScanning) {
-    return (
-      <div className="fixed inset-0 bg-black z-50 flex flex-col">
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="text-center text-white max-w-md">
-            <div className="mb-6">
-              <Camera className="w-16 h-16 mx-auto mb-4 text-cyan-400" />
-              <h2 className="text-xl font-bold mb-2">Take a Photo</h2>
-              <p className="text-gray-300 mb-6">
-                Take a clear photo of your receipt to scan it automatically
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <Button
-                onClick={() => {
-                  // Trigger file input
-                  const fileInput = document.createElement('input');
-                  fileInput.type = 'file';
-                  fileInput.accept = 'image/*';
-                  fileInput.capture = 'environment';
-                  fileInput.onchange = async (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = async (e) => {
-                        const imageData = e.target?.result as string;
-                        if (imageData) {
-                          const items = await scanReceipt(imageData);
-                          if (items.length > 0) {
-                            onItemsScanned(items);
-                          }
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  };
-                  fileInput.click();
-                }}
-                className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-3"
-              >
-                <Camera className="w-5 h-5 mr-2" />
-                Take Photo
-              </Button>
-              
-              <Button
-                onClick={() => {
-                  // Trigger file input for gallery
-                  const fileInput = document.createElement('input');
-                  fileInput.type = 'file';
-                  fileInput.accept = 'image/*';
-                  fileInput.onchange = async (e) => {
-                    const file = (e.target as HTMLInputElement).files?.[0];
-                    if (file) {
-                      const reader = new FileReader();
-                      reader.onload = async (e) => {
-                        const imageData = e.target?.result as string;
-                        if (imageData) {
-                          const items = await scanReceipt(imageData);
-                          if (items.length > 0) {
-                            onItemsScanned(items);
-                          }
-                        }
-                      };
-                      reader.readAsDataURL(file);
-                    }
-                  };
-                  fileInput.click();
-                }}
-                variant="outline"
-                className="w-full bg-transparent text-white border-white hover:bg-white hover:text-black"
-              >
-                Choose from Gallery
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        <div className="p-4 bg-white">
-          <Button
-            onClick={handleClose}
-            variant="outline"
-            className="w-full bg-transparent"
-          >
-            <X className="w-4 h-4 mr-2" />
-            Cancel
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (scannedItems.length > 0) {
+  // Success state - show scanned items
+  if (status === "success" && scannedItems.length > 0) {
     const totalAmount = scannedItems.reduce((sum, item) => sum + item.price, 0);
 
     return (
       <Card className="w-full max-w-md mx-auto bg-white border-2 border-glaucous-200">
+        {fileInputs}
         <CardHeader className="text-center">
           <div className="mx-auto mb-4 w-16 h-16 bg-glaucous-500 rounded-full flex items-center justify-center">
             <Check className="w-8 h-8 text-white" />
           </div>
           <CardTitle className="text-xl text-eerie-800">
-            Receipt Scanned Successfully!
+            Receipt Scanned!
           </CardTitle>
           <CardDescription className="text-eerie-600">
             Found {scannedItems.length} items • Total: ${totalAmount.toFixed(2)}
@@ -237,31 +230,27 @@ export function ReceiptScanner({
           </div>
 
           <div className="p-3 bg-cyan-50 rounded-lg border border-cyan-200">
-            <div className="text-sm text-cyan-800">
-              <strong>Tip:</strong> All items will be added with all
-              participants selected by default. You can adjust who shared each
-              item after adding them.
-            </div>
+            <p className="text-sm text-cyan-800">
+              <strong>Note:</strong> Items will be added with all participants selected.
+              You can adjust who shared each item after adding.
+            </p>
           </div>
 
           <div className="flex gap-2">
             <Button
-              onClick={handleClose}
+              onClick={handleRetry}
               variant="outline"
               className="flex-1 bg-transparent"
             >
-              <X className="w-4 h-4 mr-2" />
-              Cancel
+              <Camera className="w-4 h-4 mr-2" />
+              Rescan
             </Button>
             <Button
-              onClick={() => {
-                onItemsScanned(scannedItems);
-                handleClose();
-              }}
+              onClick={handleAddItems}
               className="flex-1 bg-glaucous-500 hover:bg-glaucous-600 text-white"
             >
               <Check className="w-4 h-4 mr-2" />
-              Add {scannedItems.length} Items
+              Add Items
             </Button>
           </div>
         </CardContent>
@@ -269,5 +258,49 @@ export function ReceiptScanner({
     );
   }
 
-  return null;
+  // Idle state - waiting for user to take/select photo
+  // Camera should auto-open, but show options if user cancels or if auto-open fails
+  return (
+    <Card className="w-full max-w-md mx-auto bg-white border-2 border-cyan-200">
+      {fileInputs}
+      <CardHeader className="text-center">
+        <div className="mx-auto mb-4 w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center">
+          <Camera className="w-8 h-8 text-white" />
+        </div>
+        <CardTitle className="text-xl text-eerie-800">Scan Receipt</CardTitle>
+        <CardDescription className="text-eerie-600">
+          Take a photo or choose an image of your receipt
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-3">
+          <Button
+            onClick={() => cameraInputRef.current?.click()}
+            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-6"
+          >
+            <Camera className="w-5 h-5 mr-2" />
+            Take Photo
+          </Button>
+          
+          <Button
+            onClick={() => galleryInputRef.current?.click()}
+            variant="outline"
+            className="w-full border-2 border-cyan-200 text-cyan-700 hover:bg-cyan-50 py-6"
+          >
+            <ImageIcon className="w-5 h-5 mr-2" />
+            Choose from Gallery
+          </Button>
+        </div>
+
+        <Button
+          onClick={handleClose}
+          variant="ghost"
+          className="w-full text-eerie-500 hover:text-eerie-700"
+        >
+          <X className="w-4 h-4 mr-2" />
+          Cancel
+        </Button>
+      </CardContent>
+    </Card>
+  );
 }

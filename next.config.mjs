@@ -1,8 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Remove experimental features that might cause issues
   reactStrictMode: true,
-  swcMinify: true,
+  
+  // Set Turbopack root to this project directory
+  turbopack: {
+    root: process.cwd(),
+  },
   
   // Ensure proper static file handling
   trailingSlash: false,
@@ -35,12 +38,12 @@ const nextConfig = {
     ]
   },
   
-  // Disable type checking during build to avoid blocking
+  // Enable type checking and linting during build
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   images: {
     unoptimized: true,
