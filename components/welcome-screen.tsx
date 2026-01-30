@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Users, Utensils, Download, ArrowRight } from "lucide-react";
+import { Utensils, Download, ArrowRight } from "lucide-react";
 import { usePWAInstall } from "@/hooks/use-pwa-install";
 import { motion } from "framer-motion";
 
@@ -35,34 +35,6 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           <p className="text-xl text-neutral-500 font-medium max-w-[300px] mx-auto leading-relaxed">
             The art of splitting bills without breaking friendships.
           </p>
-        </motion.div>
-
-        {/* Interactive Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="grid grid-cols-2 gap-4 w-full"
-        >
-          <div className="group p-6 bg-white border border-neutral-200 rounded-3xl hover:border-neutral-300 transition-all duration-300">
-            <div className="mb-3 p-3 bg-brand-primary/10 w-fit rounded-2xl group-hover:scale-110 transition-transform duration-300">
-              <Users className="w-6 h-6 text-brand-primary" />
-            </div>
-            <h3 className="text-lg font-heading font-bold text-neutral-900">
-              Add Diners
-            </h3>
-            <p className="text-sm text-neutral-500">Split among friends</p>
-          </div>
-
-          <div className="group p-6 bg-white border border-neutral-200 rounded-3xl hover:border-neutral-300 transition-all duration-300">
-            <div className="mb-3 p-3 bg-brand-support/20 w-fit rounded-2xl group-hover:scale-110 transition-transform duration-300">
-              <Utensils className="w-6 h-6 text-brand-support" />
-            </div>
-            <h3 className="text-lg font-heading font-bold text-neutral-900">
-              Scan Items
-            </h3>
-            <p className="text-sm text-neutral-500">OCR receipt scan</p>
-          </div>
         </motion.div>
 
         {/* Actions */}
