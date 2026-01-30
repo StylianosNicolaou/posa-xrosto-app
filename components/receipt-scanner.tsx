@@ -416,7 +416,8 @@ export function ReceiptScanner({
               Receipt Scanned!
             </h2>
             <p className="text-neutral-500">
-              Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: ${totalAmount.toFixed(2)}
+              Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: $
+              {totalAmount.toFixed(2)}
             </p>
           </div>
 
@@ -452,7 +453,9 @@ export function ReceiptScanner({
           {/* Note */}
           <div className="p-4 bg-brand-primary/5 rounded-xl border border-brand-primary/10 mb-4">
             <p className="text-sm text-neutral-600">
-              <span className="font-medium">Note:</span> Items will be added without participants. You can assign who shared each item after adding.
+              <span className="font-medium">Note:</span> Items will be added
+              without participants. You can assign who shared each item after
+              adding.
             </p>
           </div>
 
@@ -506,29 +509,29 @@ export function ReceiptScanner({
               </div>
             )}
 
-            {/* Gallery button - top right */}
-            <div className="absolute top-4 right-4 z-20">
+            {/* Close button - top left */}
+            <div className="absolute top-4 left-4 z-20">
               <Button
-                onClick={() => galleryInputRef.current?.click()}
+                onClick={handleClose}
                 variant="ghost"
                 size="icon"
-                className="text-white/80 hover:text-white hover:bg-white/20 h-10 w-10 rounded-lg"
+                className="text-white bg-black/40 hover:bg-black/60 border border-white/20 h-10 w-10 rounded-xl backdrop-blur-sm"
               >
-                <ImageIcon className="w-5 h-5" />
+                <X className="w-5 h-5" />
               </Button>
             </div>
 
             {/* Camera controls - bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 z-20">
-              <div className="flex items-center justify-center gap-8">
-                {/* Close button */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+              <div className="flex items-center justify-center gap-16">
+                {/* Gallery button */}
                 <Button
-                  onClick={handleClose}
+                  onClick={() => galleryInputRef.current?.click()}
                   variant="ghost"
                   size="icon"
-                  className="text-white/80 hover:text-white hover:bg-white/20 h-12 w-12 rounded-xl"
+                  className="text-white bg-black/40 hover:bg-black/60 border border-white/20 h-12 w-12 rounded-xl backdrop-blur-sm"
                 >
-                  <X className="w-6 h-6" />
+                  <ImageIcon className="w-5 h-5" />
                 </Button>
 
                 {/* Capture button */}
@@ -545,9 +548,9 @@ export function ReceiptScanner({
                   onClick={switchCamera}
                   variant="ghost"
                   size="icon"
-                  className="text-white/80 hover:text-white hover:bg-white/20 h-12 w-12 rounded-xl"
+                  className="text-white bg-black/40 hover:bg-black/60 border border-white/20 h-12 w-12 rounded-xl backdrop-blur-sm"
                 >
-                  <SwitchCamera className="w-6 h-6" />
+                  <SwitchCamera className="w-5 h-5" />
                 </Button>
               </div>
             </div>
