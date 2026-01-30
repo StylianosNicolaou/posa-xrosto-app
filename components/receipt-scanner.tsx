@@ -639,7 +639,7 @@ export function ReceiptScanner({
       <CardContent className="space-y-4">
         <div className="space-y-3">
           <Button
-            onClick={startCamera}
+            onClick={() => startCamera()}
             className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-6"
           >
             <Camera className="w-5 h-5 mr-2" />
