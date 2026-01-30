@@ -1,6 +1,7 @@
 import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { FoodBackground } from "@/components/food-background";
 import "./globals.css";
 
@@ -83,6 +84,8 @@ export default function RootLayout({
         <div className="relative z-10 min-h-screen flex flex-col">
           {children}
         </div>
+
+        <Analytics />
 
         <script
           dangerouslySetInnerHTML={{
