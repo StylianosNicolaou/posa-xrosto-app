@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { ImageAnnotatorClient } from "@google-cloud/vision";
+import OpenAI from "openai";
 
-// Initialize the Vision API client
-const client = new ImageAnnotatorClient({
-  keyFilename: process.env.GOOGLE_CLOUD_KEY_FILE || undefined,
-  credentials: process.env.GOOGLE_CLOUD_CREDENTIALS
-    ? JSON.parse(process.env.GOOGLE_CLOUD_CREDENTIALS)
-    : undefined,
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 interface ReceiptItem {
@@ -18,321 +15,241 @@ interface ReceiptItem {
 interface ReceiptData {
   items: ReceiptItem[];
   total: number;
-  tax?: number;
-  tip?: number;
-  subtotal?: number;
   restaurant?: string;
   date?: string;
 }
 
-// Common food items and their variations for better recognition
-const FOOD_ITEMS = [
-  "salad",
-  "caesar",
-  "chicken",
-  "beef",
-  "pork",
-  "fish",
-  "pasta",
-  "pizza",
-  "burger",
-  "sandwich",
-  "soup",
-  "appetizer",
-  "dessert",
-  "coffee",
-  "tea",
-  "soda",
-  "water",
-  "bread",
-  "garlic",
-  "fries",
-  "rice",
-  "noodles",
-  "steak",
-  "shrimp",
-  "lobster",
-  "wine",
-  "beer",
-  "cocktail",
-  "margarita",
-  "martini",
-  "whiskey",
-  "vodka",
-  "ice cream",
-  "cake",
-  "pie",
-  "cookie",
-  "brownie",
-  "cheesecake",
-];
+const EXTRACTION_PROMPT = `You are an expert receipt parser. Extract all purchased items from this receipt image.
 
-// Price patterns for better extraction
-const PRICE_PATTERNS = [
-  /\$(\d+\.\d{2})/g, // $12.99
-  /(\d+\.\d{2})/g, // 12.99
-  /\$(\d+)/g, // $12
-  /(\d+)/g, // 12
-];
+## CRITICAL RULES
 
-function isReceipt(text: string): boolean {
-  const receiptKeywords = [
-    "receipt",
-    "total",
-    "subtotal",
-    "tax",
-    "tip",
-    "amount",
-    "payment",
-    "restaurant",
-    "cafe",
-    "diner",
-    "grill",
-    "kitchen",
-    "bar",
-    "pub",
-    "menu",
-    "order",
-    "bill",
-    "check",
-    "tab",
-    "due",
-    "balance",
-  ];
+### What to EXTRACT:
+- Menu items, food, drinks, products that were purchased
+- The QUANTITY shown (number before item name, e.g., "3" in "3 PIZZA")
+- The EXACT PRICE shown on the receipt for that line (this is always the TOTAL for that line, NOT per-unit)
 
-  const lowerText = text.toLowerCase();
-  const keywordMatches = receiptKeywords.filter((keyword) =>
-    lowerText.includes(keyword)
-  );
+### What to IGNORE completely:
+- Restaurant name, address, phone, table number, server, check number
+- Dates, times, transaction IDs
+- Subtotal, Total, Tax, Tip, Gratuity, Service Charge, Discounts
+- "Thank you" messages, footer text
 
-  return keywordMatches.length >= 2;
+### PRICE EXTRACTION RULE (VERY IMPORTANT):
+The price shown next to an item is the LINE TOTAL (quantity × unit price).
+- Example: "3 PIZZA 45.00" means 3 pizzas for $45.00 total
+- You must return: {"name": "Pizza", "price": 45.00, "quantity": 3}
+- DO NOT divide the price by quantity. Use the exact price shown.
+
+### QUANTITY RULE:
+- Look for a number at the START of the line (e.g., "3 LASAGNA" = quantity 3)
+- If no quantity shown, assume quantity is 1
+- Always include the quantity field, even if it's 1
+
+## OUTPUT FORMAT
+Return ONLY valid JSON, no markdown code blocks, no explanation:
+{
+  "items": [
+    {"name": "Item Name", "price": 45.00, "quantity": 3},
+    {"name": "Another Item", "price": 12.50, "quantity": 1}
+  ],
+  "restaurant": "Restaurant Name or null",
+  "date": "Date string or null"
 }
 
-function extractItems(text: string): ReceiptItem[] {
-  const lines = text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-  const items: ReceiptItem[] = [];
-
-  for (const line of lines) {
-    // Skip lines that are likely headers, totals, or tax info
-    if (
-      line.toLowerCase().includes("total") ||
-      line.toLowerCase().includes("tax") ||
-      line.toLowerCase().includes("tip") ||
-      line.toLowerCase().includes("subtotal") ||
-      line.toLowerCase().includes("amount") ||
-      line.toLowerCase().includes("due")
-    ) {
-      continue;
-    }
-
-    // Look for price patterns
-    let price = 0;
-    let priceMatch = null;
-
-    for (const pattern of PRICE_PATTERNS) {
-      const matches = line.match(pattern);
-      if (matches && matches.length > 0) {
-        priceMatch = matches[matches.length - 1]; // Take the last price in the line
-        price = parseFloat(priceMatch);
-        break;
-      }
-    }
-
-    if (price > 0 && price < 1000) {
-      // Reasonable price range
-      // Extract item name (everything before the price)
-      let itemName = line;
-      if (priceMatch) {
-        itemName = line.replace(priceMatch, "").trim();
-        // Remove common separators
-        itemName = itemName.replace(/[x×]\s*\d+/g, "").trim(); // Remove quantity indicators
-        itemName = itemName.replace(/^\d+\s*/, "").trim(); // Remove leading numbers
-      }
-
-      // Clean up the item name
-      itemName = itemName.replace(/[^\w\s]/g, " ").trim();
-
-      // Only add if it looks like a food item
-      if (itemName.length > 2 && itemName.length < 50) {
-        const lowerName = itemName.toLowerCase();
-        const isFoodItem =
-          FOOD_ITEMS.some((food) => lowerName.includes(food)) ||
-          lowerName.includes("item") ||
-          lowerName.includes("dish") ||
-          lowerName.includes("plate");
-
-        if (isFoodItem || itemName.length > 3) {
-          items.push({
-            name: itemName,
-            price: price,
-          });
-        }
-      }
-    }
-  }
-
-  return items;
-}
-
-function extractReceiptData(text: string): ReceiptData {
-  const items = extractItems(text);
-  const total = items.reduce((sum, item) => sum + item.price, 0);
-
-  return {
-    items,
-    total,
-    restaurant: extractRestaurantName(text),
-    date: extractDate(text),
-  };
-}
-
-function extractRestaurantName(text: string): string | undefined {
-  const lines = text.split("\n");
-  for (const line of lines) {
-    const cleanLine = line.trim();
-    if (cleanLine.length > 3 && cleanLine.length < 50) {
-      // Look for lines that might be restaurant names
-      if (
-        !cleanLine.toLowerCase().includes("total") &&
-        !cleanLine.toLowerCase().includes("tax") &&
-        !cleanLine.toLowerCase().includes("receipt") &&
-        !cleanLine.match(/\d/)
-      ) {
-        return cleanLine;
-      }
-    }
-  }
-  return undefined;
-}
-
-function extractDate(text: string): string | undefined {
-  const datePatterns = [
-    /\d{1,2}\/\d{1,2}\/\d{2,4}/g,
-    /\d{1,2}-\d{1,2}-\d{2,4}/g,
-    /\d{4}-\d{2}-\d{2}/g,
-  ];
-
-  for (const pattern of datePatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      return match[0];
-    }
-  }
-  return undefined;
-}
+If no items found: {"items": [], "error": "Could not identify any menu items"}`;
 
 export async function POST(request: NextRequest) {
   try {
     const { imageData } = await request.json();
-    
+
     if (!imageData) {
       return NextResponse.json(
         { error: "No image data provided" },
-        { status: 400 }
+        { status: 400 },
       );
     }
-    
-    // Check if credentials are available
-    if (!process.env.GOOGLE_CLOUD_CREDENTIALS && !process.env.GOOGLE_CLOUD_KEY_FILE) {
-      console.error("No Google Cloud credentials found");
+
+    // Check if API key is available
+    if (!process.env.OPENAI_API_KEY) {
+      console.error("No OpenAI API key found");
       return NextResponse.json(
-        { error: "OCR service not configured. Please check environment variables." },
-        { status: 500 }
+        {
+          error:
+            "Receipt scanning service not configured. Please add OPENAI_API_KEY to environment variables.",
+        },
+        { status: 500 },
       );
     }
-    
-    // Remove data URL prefix if present
-    const base64Image = imageData.replace(/^data:image\/[a-z]+;base64,/, "");
-    
-    console.log("Starting OCR processing...");
-    
-    // Perform OCR on the image
-    const [result] = await client.textDetection({
-      image: {
-        content: base64Image,
-      },
+
+    console.log("Starting GPT-4o Vision processing...");
+
+    // Ensure the image data has the proper data URL format
+    let imageUrl = imageData;
+    if (!imageData.startsWith("data:")) {
+      imageUrl = `data:image/jpeg;base64,${imageData}`;
+    }
+
+    // Call GPT-4o Vision
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: EXTRACTION_PROMPT,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: imageUrl,
+                detail: "high",
+              },
+            },
+          ],
+        },
+      ],
+      max_tokens: 2000,
+      temperature: 0.1, // Low temperature for consistent parsing
     });
 
-    const detections = result.textAnnotations;
-    if (!detections || detections.length === 0) {
+    const content = response.choices[0]?.message?.content;
+
+    if (!content) {
+      console.error("No response from GPT-4o");
       return NextResponse.json(
-        { error: "No text detected in the image" },
-        { status: 400 }
+        { error: "Failed to analyze receipt. Please try again." },
+        { status: 500 },
       );
     }
 
-    // Get the full text
-    const fullText = detections[0].description || "";
+    console.log("GPT-4o Response:", content);
 
-    // Validate that this is actually a receipt
-    if (!isReceipt(fullText)) {
+    // Parse the JSON response
+    let parsedData: ReceiptData & { error?: string };
+    try {
+      // Clean the response - remove markdown code blocks if present
+      let cleanContent = content.trim();
+      if (cleanContent.startsWith("```json")) {
+        cleanContent = cleanContent.slice(7);
+      } else if (cleanContent.startsWith("```")) {
+        cleanContent = cleanContent.slice(3);
+      }
+      if (cleanContent.endsWith("```")) {
+        cleanContent = cleanContent.slice(0, -3);
+      }
+      cleanContent = cleanContent.trim();
+
+      parsedData = JSON.parse(cleanContent);
+    } catch (parseError) {
+      console.error("Failed to parse GPT response:", content);
       return NextResponse.json(
         {
           error:
-            "The image doesn't appear to be a receipt. Please try again with a clear receipt image.",
+            "Failed to parse receipt data. Please try again with a clearer image.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Extract receipt data
-    const receiptData = extractReceiptData(fullText);
+    // Check for extraction errors
+    if (parsedData.error) {
+      return NextResponse.json({ error: parsedData.error }, { status: 400 });
+    }
 
-    if (receiptData.items.length === 0) {
+    // Validate items
+    if (!parsedData.items || parsedData.items.length === 0) {
       return NextResponse.json(
         {
           error:
-            "No items could be extracted from the receipt. Please ensure the receipt is clear and well-lit.",
+            "No items could be extracted from the receipt. Please ensure the receipt is clear and shows item prices.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
+
+    // Clean and validate items
+    const validItems: ReceiptItem[] = parsedData.items
+      .filter((item) => {
+        return (
+          item.name &&
+          typeof item.name === "string" &&
+          item.name.length > 0 &&
+          typeof item.price === "number" &&
+          item.price > 0
+        );
+      })
+      .map((item) => ({
+        name: item.name.trim(),
+        price: Math.round(item.price * 100) / 100, // Round to 2 decimal places
+        quantity:
+          item.quantity && item.quantity > 1 ? item.quantity : undefined,
+      }));
+
+    if (validItems.length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            "No valid items found in the receipt. Please try again with a clearer image.",
+        },
+        { status: 400 },
+      );
+    }
+
+    // Calculate total from items
+    const total = validItems.reduce(
+      (sum, item) => sum + item.price * (item.quantity || 1),
+      0,
+    );
+
+    console.log(`Successfully extracted ${validItems.length} items`);
 
     return NextResponse.json({
       success: true,
-      data: receiptData,
-      rawText: fullText,
+      data: {
+        items: validItems,
+        total: Math.round(total * 100) / 100,
+        restaurant: parsedData.restaurant,
+        date: parsedData.date,
+      },
     });
-    } catch (error) {
-    console.error("OCR processing error:", error);
-    
-    // Handle specific Google Cloud errors
+  } catch (error) {
+    console.error("Receipt processing error:", error);
+
     if (error instanceof Error) {
       console.error("Error message:", error.message);
-      console.error("Error stack:", error.stack);
-      
-      if (error.message.includes("authentication")) {
+
+      // Handle specific OpenAI errors
+      if (error.message.includes("API key")) {
+        return NextResponse.json(
+          { error: "Invalid API key. Please check your OpenAI API key." },
+          { status: 401 },
+        );
+      }
+      if (error.message.includes("quota") || error.message.includes("rate")) {
+        return NextResponse.json(
+          { error: "API rate limit reached. Please try again in a moment." },
+          { status: 429 },
+        );
+      }
+      if (error.message.includes("billing")) {
         return NextResponse.json(
           {
             error:
-              "OCR service authentication failed. Please check API credentials.",
+              "OpenAI billing issue. Please check your OpenAI account has credits.",
           },
-          { status: 500 }
-        );
-      }
-      if (error.message.includes("quota")) {
-        return NextResponse.json(
-          { error: "OCR service quota exceeded. Please try again later." },
-          { status: 429 }
-        );
-      }
-      if (error.message.includes("credentials")) {
-        return NextResponse.json(
-          { error: "Google Cloud credentials not found. Please check environment variables." },
-          { status: 500 }
+          { status: 402 },
         );
       }
     }
-    
+
     return NextResponse.json(
       {
         error:
           "Failed to process receipt. Please try again with a clearer image.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

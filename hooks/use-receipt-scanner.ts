@@ -5,6 +5,7 @@ import { useState, useCallback } from "react";
 interface ScannedItem {
   name: string;
   price: number;
+  quantity: number;
 }
 
 type ScannerStatus = "idle" | "processing" | "success" | "error";
@@ -43,10 +44,13 @@ export function useReceiptScanner() {
         throw new Error("Invalid response from OCR service");
       }
 
-      const items: ScannedItem[] = result.data.items.map((item: { name: string; price: number }) => ({
-        name: item.name,
-        price: item.price,
-      }));
+      const items: ScannedItem[] = result.data.items.map(
+        (item: { name: string; price: number; quantity?: number }) => ({
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity || 1,
+        }),
+      );
 
       if (items.length === 0) {
         throw new Error("No items found in the receipt");

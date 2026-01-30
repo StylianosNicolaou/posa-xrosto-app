@@ -412,6 +412,10 @@ export function ReceiptScanner({
   // Success state - show scanned items
   if (status === "success" && scannedItems.length > 0) {
     const totalAmount = scannedItems.reduce((sum, item) => sum + item.price, 0);
+    const totalItems = scannedItems.reduce(
+      (sum, item) => sum + (item.quantity || 1),
+      0,
+    );
 
     return (
       <Card className="w-full max-w-md mx-auto bg-white border-2 border-glaucous-200">
@@ -424,7 +428,8 @@ export function ReceiptScanner({
             Receipt Scanned!
           </CardTitle>
           <CardDescription className="text-eerie-600">
-            Found {scannedItems.length} items • Total: ${totalAmount.toFixed(2)}
+            Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: $
+            {totalAmount.toFixed(2)}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -435,8 +440,19 @@ export function ReceiptScanner({
                 className="flex justify-between items-center p-3 bg-glaucous-50 rounded-lg border border-glaucous-200"
               >
                 <div className="flex-1">
-                  <div className="font-medium text-eerie-800">{item.name}</div>
-                  <div className="text-xs text-eerie-600">Item {index + 1}</div>
+                  <div className="font-medium text-eerie-800">
+                    {item.quantity > 1 && (
+                      <span className="inline-flex items-center justify-center bg-glaucous-200 text-glaucous-700 text-xs font-bold rounded-full w-5 h-5 mr-2">
+                        {item.quantity}
+                      </span>
+                    )}
+                    {item.name}
+                  </div>
+                  {item.quantity > 1 && (
+                    <div className="text-xs text-eerie-500 mt-0.5">
+                      ${(item.price / item.quantity).toFixed(2)} each
+                    </div>
+                  )}
                 </div>
                 <Badge className="bg-glaucous-500 text-white font-semibold">
                   ${item.price.toFixed(2)}
