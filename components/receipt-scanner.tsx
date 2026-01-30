@@ -315,9 +315,7 @@ export function ReceiptScanner({
             <h2 className="text-2xl font-bold text-neutral-900 mb-2">
               Processing Receipt
             </h2>
-            <p className="text-neutral-500">
-              Analyzing your receipt with OCR...
-            </p>
+            <p className="text-neutral-500">Analyzing your receipt...</p>
           </div>
           <div className="flex justify-center gap-1.5">
             <div
