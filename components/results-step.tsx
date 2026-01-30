@@ -77,7 +77,7 @@ export function ResultsStep({
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-6 relative z-10 pb-24">
+    <div className="min-h-screen flex flex-col p-6 relative z-10 pb-24 bg-neutral-50">
       <div className="max-w-4xl mx-auto w-full space-y-8">
         {/* Header */}
         <motion.div
@@ -85,13 +85,13 @@ export function ResultsStep({
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2 pt-4"
         >
-          <div className="inline-flex items-center justify-center p-3 bg-zinc-100 rounded-full mb-2">
-            <Check className="w-6 h-6 text-black" />
+          <div className="inline-flex items-center justify-center p-3 bg-success/15 rounded-full mb-2">
+            <Check className="w-6 h-6 text-success" />
           </div>
-          <h2 className="text-4xl font-heading font-bold text-black">
+          <h2 className="text-4xl font-heading font-bold text-neutral-900">
             All Settled!
           </h2>
-          <p className="text-zinc-500 text-lg">Here is the breakdown</p>
+          <p className="text-neutral-500 text-lg">Here is the breakdown</p>
         </motion.div>
 
         {/* Total Card */}
@@ -99,17 +99,17 @@ export function ResultsStep({
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-black text-white p-8 rounded-[2.5rem] shadow-2xl shadow-black/30 text-center relative overflow-hidden"
+          className="bg-brand-primary text-white p-8 rounded-[2.5rem] shadow-2xl shadow-brand-primary/35 text-center relative overflow-hidden"
         >
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
           <div className="relative z-10">
-            <p className="text-zinc-400 font-medium uppercase tracking-widest mb-2">
+            <p className="text-white/70 font-medium uppercase tracking-widest mb-2">
               Total Bill
             </p>
             <h3 className="text-6xl md:text-7xl font-heading font-bold tracking-tight">
               ${totalAmount.toFixed(2)}
             </h3>
-            <div className="mt-4 inline-block px-4 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-sm font-medium">
+            <div className="mt-4 inline-block px-4 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/10 text-sm font-medium">
               Split among {namesCount} people
             </div>
           </div>
@@ -123,11 +123,11 @@ export function ResultsStep({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + index * 0.05 }}
-              className="group bg-white/40 backdrop-blur-md border border-black/5 p-6 rounded-[2rem] hover:bg-white/60 transition-all duration-300"
+              className="group bg-white border border-neutral-200 p-6 rounded-[2rem] hover:border-neutral-300 transition-all duration-300"
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-black">{person.name}</h3>
-                <div className="text-2xl font-heading font-bold text-zinc-600">
+                <h3 className="text-xl font-bold text-neutral-900">{person.name}</h3>
+                <div className="text-2xl font-heading font-bold text-brand-primary">
                   ${person.total.toFixed(2)}
                 </div>
               </div>
@@ -136,7 +136,7 @@ export function ResultsStep({
                 {person.items.map((item, i) => (
                   <div
                     key={i}
-                    className="flex justify-between text-sm text-zinc-500 group-hover:text-zinc-700 transition-colors"
+                    className="flex justify-between text-sm text-neutral-500 group-hover:text-neutral-700 transition-colors"
                   >
                     <span>{item.name}</span>
                     <span className="font-medium">
@@ -159,7 +159,7 @@ export function ResultsStep({
           <Button
             variant="ghost"
             onClick={onBack}
-            className="h-16 rounded-2xl border border-black/5 hover:bg-zinc-100 text-black bg-white/40 backdrop-blur-md"
+            className="h-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back
@@ -167,23 +167,23 @@ export function ResultsStep({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="flex-1 h-16 rounded-2xl bg-black hover:bg-zinc-800 text-white text-lg font-bold shadow-xl shadow-black/20">
+              <Button className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-lg font-bold shadow-xl shadow-brand-primary/25">
                 <Share2 className="w-5 h-5 mr-2" />
                 Share
                 <ChevronDown className="w-5 h-5 ml-2 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-56 rounded-xl p-2">
+            <DropdownMenuContent align="center" className="w-56 rounded-xl p-2 bg-white border-neutral-200">
               <DropdownMenuItem
                 onClick={() => handleShare("full")}
-                className="cursor-pointer py-3 rounded-lg focus:bg-zinc-100 focus:text-black"
+                className="cursor-pointer py-3 rounded-lg text-neutral-700 focus:bg-neutral-100 focus:text-neutral-900"
               >
                 <List className="w-4 h-4 mr-2" />
                 Full Breakdown
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleShare("simple")}
-                className="cursor-pointer py-3 rounded-lg focus:bg-zinc-100 focus:text-black"
+                className="cursor-pointer py-3 rounded-lg text-neutral-700 focus:bg-neutral-100 focus:text-neutral-900"
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Totals Only
@@ -194,7 +194,7 @@ export function ResultsStep({
           <Button
             variant="destructive"
             onClick={onReset}
-            className="h-16 rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-xl shadow-red-500/20"
+            className="h-16 rounded-2xl bg-danger hover:bg-danger/90 text-white shadow-xl shadow-danger/20"
           >
             <RotateCcw className="w-5 h-5 mr-2" />
             Reset

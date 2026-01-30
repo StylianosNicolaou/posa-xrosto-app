@@ -49,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#4FB3F6",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -69,7 +69,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Posa Xrosto" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="msapplication-TileColor" content="#000000" />
+        <meta name="msapplication-TileColor" content="#4FB3F6" />
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
       <body

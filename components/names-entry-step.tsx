@@ -92,7 +92,7 @@ export function NamesEntryStep({
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-6 relative z-10">
+    <div className="min-h-screen flex flex-col p-6 relative z-10 bg-neutral-50">
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full space-y-8">
         {/* Header */}
         <motion.div
@@ -100,10 +100,10 @@ export function NamesEntryStep({
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2 pt-8"
         >
-          <h2 className="text-4xl font-heading font-bold text-black">
+          <h2 className="text-4xl font-heading font-bold text-neutral-900">
             Who's eating?
           </h2>
-          <p className="text-zinc-500 text-lg">Name your squad members</p>
+          <p className="text-neutral-500 text-lg">Name your squad members</p>
         </motion.div>
 
         {/* Auto Generate Button */}
@@ -116,7 +116,7 @@ export function NamesEntryStep({
             type="button"
             variant="outline"
             onClick={assignRandomNames}
-            className="w-full h-12 rounded-xl border-dashed border-black/20 text-zinc-700 hover:bg-zinc-50 hover:border-black/40 transition-all font-medium"
+            className="w-full h-12 rounded-xl border-dashed border-neutral-300 text-neutral-500 hover:bg-neutral-100 hover:border-brand-primary/50 hover:text-neutral-700 transition-all font-medium"
           >
             <Shuffle className="w-4 h-4 mr-2" />
             Auto-generate Names
@@ -134,14 +134,14 @@ export function NamesEntryStep({
                 transition={{ delay: index * 0.05 }}
                 className="group relative"
               >
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-zinc-100 text-zinc-600 flex items-center justify-center text-xs font-bold font-mono">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center text-xs font-bold font-mono">
                   {index + 1}
                 </div>
                 <Input
                   value={name}
                   onChange={(e) => updateName(index, e.target.value)}
                   placeholder={`Person ${index + 1}`}
-                  className="h-14 pl-12 rounded-2xl bg-white/40 backdrop-blur-sm border-black/5 text-lg font-medium focus:bg-white/80 transition-all shadow-sm"
+                  className="h-14 pl-12 rounded-2xl bg-white border-neutral-200 text-lg font-medium text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-brand-primary transition-all shadow-sm"
                 />
               </motion.div>
             ))}
@@ -153,9 +153,9 @@ export function NamesEntryStep({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-3 bg-red-50/80 backdrop-blur-sm border border-red-100 rounded-xl text-center"
+            className="p-3 bg-danger/10 border border-danger/20 rounded-xl text-center"
           >
-            <p className="text-sm text-red-600 font-medium">
+            <p className="text-sm text-danger font-medium">
               Please give everyone a unique name
             </p>
           </motion.div>
@@ -171,14 +171,14 @@ export function NamesEntryStep({
           <Button
             variant="ghost"
             onClick={onBack}
-            className="h-16 w-16 rounded-2xl border border-black/5 hover:bg-zinc-100 text-black"
+            className="h-16 w-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
           >
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <Button
             onClick={onNext}
             disabled={!isValid}
-            className="flex-1 h-16 rounded-2xl bg-black hover:bg-zinc-800 text-white text-xl font-heading font-bold shadow-xl shadow-black/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             Next Step
             <ArrowRight className="w-6 h-6 ml-2" />

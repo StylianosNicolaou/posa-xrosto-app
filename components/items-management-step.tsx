@@ -66,7 +66,7 @@ export function ItemsManagementStep({
 
   if (showScanner) {
     return (
-      <div className="fixed inset-0 z-50 bg-black">
+      <div className="fixed inset-0 z-50 bg-neutral-900">
         <ReceiptScanner
           onItemsScanned={handleScannedItems}
           onClose={() => setShowScanner(false)}
@@ -76,16 +76,16 @@ export function ItemsManagementStep({
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative z-10 pb-32">
+    <div className="min-h-screen flex flex-col relative z-10 pb-32 bg-neutral-50">
       {/* Header / Actions */}
-      <div className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-black/5 p-4">
+      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-neutral-200 p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-heading font-bold text-black">
+          <h2 className="text-2xl font-heading font-bold text-neutral-900">
             Order List
           </h2>
           <Button
             onClick={() => setShowScanner(true)}
-            className="rounded-full bg-zinc-100 text-black hover:bg-zinc-200 border-0 font-medium px-6"
+            className="rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border-0 font-medium px-6"
           >
             <Camera className="w-4 h-4 mr-2" />
             Scan Receipt
@@ -105,24 +105,24 @@ export function ItemsManagementStep({
         />
       </div>
 
-      {/* Floating Action Button for Manual Add */}
+      {/* Floating Action Button - ACCENT color (2% usage, rare!) */}
       <div className="fixed bottom-8 right-6 z-30">
         <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
           <SheetTrigger asChild>
             <Button
               size="icon"
-              className="h-16 w-16 rounded-full bg-black text-white shadow-2xl shadow-black/30 hover:scale-110 transition-all active:scale-95"
+              className="h-16 w-16 rounded-full bg-brand-accent text-neutral-900 shadow-2xl shadow-brand-accent/40 hover:bg-brand-accent-hover hover:scale-110 transition-all active:scale-95"
             >
               <Plus className="w-8 h-8" />
             </Button>
           </SheetTrigger>
           <SheetContent
             side="bottom"
-            className="rounded-t-[2rem] h-[85vh] p-0 border-0 bg-white/95 backdrop-blur-xl"
+            className="rounded-t-[2rem] h-[85vh] p-0 border-0 bg-white"
           >
             <div className="h-full overflow-y-auto p-6">
               <SheetHeader className="mb-6 text-left">
-                <SheetTitle className="text-3xl font-heading font-bold text-black">
+                <SheetTitle className="text-3xl font-heading font-bold text-neutral-900">
                   Add Item
                 </SheetTitle>
               </SheetHeader>

@@ -4,75 +4,81 @@
 
 @layer base {
   :root {
-    /* Background: Pure White with Noise */
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
+    /* 
+     * Full Semantic System (v2 - lively)
+     * Distribution: 90% neutral, 8% blue, 2% coral
+     * Accent should feel RARE and valuable
+     */
 
-    /* Card: White with Glassmorphism */
+    /* Background: neutral.50 #FAFBFD */
+    --background: 220 33% 99%;
+    --foreground: 221 39% 11%;
+
+    /* Card/Surface: white */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
+    --card-foreground: 221 39% 11%;
 
     /* Popover */
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
+    --popover-foreground: 221 39% 11%;
 
-    /* Primary: Deep Black */
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
+    /* Primary: brand.primary #4FB3F6 */
+    --primary: 202 91% 64%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Light Gray */
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
+    /* Secondary: brand.support #A5AED6 */
+    --secondary: 229 35% 74%;
+    --secondary-foreground: 221 39% 11%;
 
-    /* Muted: Subtle Gray */
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
+    /* Muted: neutral.100 #F2F4F8 */
+    --muted: 220 27% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    /* Accent: For hover states */
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
+    /* Accent: brand.accent #FF9F7A - USE VERY RARELY! */
+    --accent: 17 100% 74%;
+    --accent-foreground: 221 39% 11%;
 
-    /* Destructive: Keep red but desaturated/darker for elegance */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    /* Destructive: danger #EF4444 */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 9%;
+    /* Border: neutral.200 #E6E9F0 */
+    --border: 220 26% 93%;
+    --input: 220 26% 93%;
+    --ring: 202 91% 64%;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    /* Background: Deep Black */
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Dark mode adaptation */
+    --background: 221 39% 11%;
+    --foreground: 220 33% 99%;
 
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
+    --card: 220 26% 14%;
+    --card-foreground: 220 33% 99%;
 
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 26% 14%;
+    --popover-foreground: 220 33% 99%;
 
-    /* Primary: Pure White */
-    --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary: 202 91% 64%;
+    --primary-foreground: 221 39% 11%;
 
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 229 35% 74%;
+    --secondary-foreground: 221 39% 11%;
 
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
+    --muted: 220 26% 20%;
+    --muted-foreground: 220 13% 65%;
 
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 17 100% 74%;
+    --accent-foreground: 221 39% 11%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
-    --ring: 0 0% 83.1%;
+    --border: 220 26% 20%;
+    --input: 220 26% 20%;
+    --ring: 202 91% 64%;
   }
 }
 

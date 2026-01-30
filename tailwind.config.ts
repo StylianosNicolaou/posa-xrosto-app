@@ -57,6 +57,31 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Brand colors
+        brand: {
+          primary: "#4FB3F6",
+          "primary-hover": "#2F9EE8",
+          accent: "#FF9F7A",
+          "accent-hover": "#FF8B61",
+          support: "#A5AED6",
+        },
+        // Neutral scale
+        neutral: {
+          0: "#FFFFFF",
+          50: "#FAFBFD",
+          100: "#F2F4F8",
+          200: "#E6E9F0",
+          300: "#D2D7E2",
+          400: "#9AA3B2",
+          500: "#6B7280",
+          700: "#374151",
+          900: "#111827",
+        },
+        // Semantic states (CRITICAL for money)
+        success: "#22C55E",
+        danger: "#EF4444",
+        warning: "#F59E0B",
+        info: "#4FB3F6",
       },
       borderRadius: {
         lg: "var(--radius)",

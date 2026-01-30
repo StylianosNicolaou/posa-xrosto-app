@@ -313,16 +313,16 @@ export function ReceiptScanner({
   // Processing state - show loading indicator
   if (status === "processing") {
     return (
-      <Card className="w-full max-w-md mx-auto bg-white border-2 border-cyan-200">
+      <Card className="w-full max-w-md mx-auto bg-white border-2 border-brand-primary/30">
         {hiddenElements}
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-brand-primary rounded-full flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-white animate-spin" />
           </div>
-          <CardTitle className="text-xl text-eerie-800">
+          <CardTitle className="text-xl text-neutral-900">
             Processing Receipt
           </CardTitle>
-          <CardDescription className="text-eerie-600">
+          <CardDescription className="text-neutral-500">
             Analyzing your receipt with OCR...
           </CardDescription>
         </CardHeader>
@@ -331,26 +331,26 @@ export function ReceiptScanner({
             <div className="flex justify-center">
               <div className="flex gap-1">
                 <div
-                  className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-brand-primary rounded-full animate-bounce"
                   style={{ animationDelay: "0ms" }}
                 />
                 <div
-                  className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-brand-primary rounded-full animate-bounce"
                   style={{ animationDelay: "150ms" }}
                 />
                 <div
-                  className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"
+                  className="w-2 h-2 bg-brand-primary rounded-full animate-bounce"
                   style={{ animationDelay: "300ms" }}
                 />
               </div>
             </div>
-            <p className="text-center text-sm text-eerie-600">
+            <p className="text-center text-sm text-neutral-500">
               This may take a few seconds
             </p>
             <Button
               onClick={handleClose}
               variant="outline"
-              className="w-full bg-transparent"
+              className="w-full bg-transparent border-neutral-200 text-neutral-700 hover:bg-neutral-100"
             >
               <X className="w-4 h-4 mr-2" />
               Cancel
@@ -364,23 +364,23 @@ export function ReceiptScanner({
   // Error state (OCR processing error)
   if (status === "error") {
     return (
-      <Card className="w-full max-w-md mx-auto bg-white border-2 border-red-200">
+      <Card className="w-full max-w-md mx-auto bg-white border-2 border-danger/30">
         {hiddenElements}
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-red-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-danger rounded-full flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-xl text-eerie-800">Scan Failed</CardTitle>
-          <CardDescription className="text-red-600">
+          <CardTitle className="text-xl text-neutral-900">Scan Failed</CardTitle>
+          <CardDescription className="text-danger">
             {error || "Failed to process receipt"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm text-red-700">
+          <div className="p-3 bg-danger/10 border border-danger/20 rounded-lg">
+            <p className="text-sm text-danger">
               <strong>Tips for better results:</strong>
             </p>
-            <ul className="text-sm text-red-600 mt-2 list-disc list-inside space-y-1">
+            <ul className="text-sm text-danger/80 mt-2 list-disc list-inside space-y-1">
               <li>Ensure good lighting</li>
               <li>Hold the camera steady</li>
               <li>Include the entire receipt</li>
@@ -391,14 +391,14 @@ export function ReceiptScanner({
             <Button
               onClick={handleClose}
               variant="outline"
-              className="flex-1 bg-transparent"
+              className="flex-1 bg-transparent border-neutral-200 text-neutral-700 hover:bg-neutral-100"
             >
               <X className="w-4 h-4 mr-2" />
               Cancel
             </Button>
             <Button
               onClick={handleRetry}
-              className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white"
+              className="flex-1 bg-brand-primary hover:bg-brand-primary-hover text-white"
             >
               <Camera className="w-4 h-4 mr-2" />
               Try Again
@@ -418,16 +418,16 @@ export function ReceiptScanner({
     );
 
     return (
-      <Card className="w-full max-w-md mx-auto bg-white border-2 border-glaucous-200">
+      <Card className="w-full max-w-md mx-auto bg-white border-2 border-success/30">
         {hiddenElements}
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-glaucous-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-success rounded-full flex items-center justify-center">
             <Check className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-xl text-eerie-800">
+          <CardTitle className="text-xl text-neutral-900">
             Receipt Scanned!
           </CardTitle>
-          <CardDescription className="text-eerie-600">
+          <CardDescription className="text-neutral-500">
             Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: $
             {totalAmount.toFixed(2)}
           </CardDescription>
@@ -437,32 +437,32 @@ export function ReceiptScanner({
             {scannedItems.map((item, index) => (
               <div
                 key={index}
-                className="flex justify-between items-center p-3 bg-glaucous-50 rounded-lg border border-glaucous-200"
+                className="flex justify-between items-center p-3 bg-neutral-100 rounded-lg border border-neutral-200"
               >
                 <div className="flex-1">
-                  <div className="font-medium text-eerie-800">
+                  <div className="font-medium text-neutral-900">
                     {item.quantity > 1 && (
-                      <span className="inline-flex items-center justify-center bg-glaucous-200 text-glaucous-700 text-xs font-bold rounded-full w-5 h-5 mr-2">
+                      <span className="inline-flex items-center justify-center bg-brand-primary/15 text-brand-primary text-xs font-bold rounded-full w-5 h-5 mr-2">
                         {item.quantity}
                       </span>
                     )}
                     {item.name}
                   </div>
                   {item.quantity > 1 && (
-                    <div className="text-xs text-eerie-500 mt-0.5">
+                    <div className="text-xs text-neutral-500 mt-0.5">
                       ${(item.price / item.quantity).toFixed(2)} each
                     </div>
                   )}
                 </div>
-                <Badge className="bg-glaucous-500 text-white font-semibold">
+                <Badge className="bg-brand-primary text-white font-semibold">
                   ${item.price.toFixed(2)}
                 </Badge>
               </div>
             ))}
           </div>
 
-          <div className="p-3 bg-cyan-50 rounded-lg border border-cyan-200">
-            <p className="text-sm text-cyan-800">
+          <div className="p-3 bg-info/10 rounded-lg border border-info/20">
+            <p className="text-sm text-neutral-700">
               <strong>Note:</strong> Items will be added with all participants
               selected. You can adjust who shared each item after adding.
             </p>
@@ -472,14 +472,14 @@ export function ReceiptScanner({
             <Button
               onClick={handleRetry}
               variant="outline"
-              className="flex-1 bg-transparent"
+              className="flex-1 bg-transparent border-neutral-200 text-neutral-700 hover:bg-neutral-100"
             >
               <Camera className="w-4 h-4 mr-2" />
               Rescan
             </Button>
             <Button
               onClick={handleAddItems}
-              className="flex-1 bg-glaucous-500 hover:bg-glaucous-600 text-white"
+              className="flex-1 bg-success hover:bg-success/90 text-white"
             >
               <Check className="w-4 h-4 mr-2" />
               Add Items
@@ -495,7 +495,7 @@ export function ReceiptScanner({
     return (
       <div className="w-full max-w-md mx-auto">
         {hiddenElements}
-        <Card className="bg-black border-2 border-cyan-200 overflow-hidden">
+        <Card className="bg-neutral-900 border-2 border-brand-primary/30 overflow-hidden">
           <div className="relative">
             {/* Video preview */}
             <video
@@ -503,7 +503,7 @@ export function ReceiptScanner({
               autoPlay
               playsInline
               muted
-              className="w-full aspect-[3/4] object-cover bg-gray-900"
+              className="w-full aspect-[3/4] object-cover bg-neutral-900"
             />
 
             {/* Requesting overlay */}
@@ -533,9 +533,9 @@ export function ReceiptScanner({
                 <Button
                   onClick={capturePhoto}
                   disabled={cameraState !== "active"}
-                  className="h-16 w-16 rounded-full bg-white hover:bg-gray-100 border-4 border-cyan-500 p-0"
+                  className="h-16 w-16 rounded-full bg-white hover:bg-gray-100 border-4 border-brand-primary p-0"
                 >
-                  <div className="h-12 w-12 rounded-full bg-cyan-500" />
+                  <div className="h-12 w-12 rounded-full bg-brand-primary" />
                 </Button>
 
                 {/* Switch camera button */}
@@ -563,7 +563,7 @@ export function ReceiptScanner({
             </div>
           </div>
         </Card>
-        <p className="text-center text-sm text-eerie-600 mt-3">
+        <p className="text-center text-sm text-neutral-400 mt-3">
           Point at your receipt and tap the capture button
         </p>
       </div>
@@ -573,23 +573,23 @@ export function ReceiptScanner({
   // Camera error state or not supported
   if (cameraState === "error" || cameraState === "not-supported") {
     return (
-      <Card className="w-full max-w-md mx-auto bg-white border-2 border-amber-200">
+      <Card className="w-full max-w-md mx-auto bg-white border-2 border-warning/40">
         {hiddenElements}
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto mb-4 w-16 h-16 bg-warning rounded-full flex items-center justify-center">
             <AlertCircle className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-xl text-eerie-800">
+          <CardTitle className="text-xl text-neutral-900">
             Camera Unavailable
           </CardTitle>
-          <CardDescription className="text-amber-600">
+          <CardDescription className="text-warning">
             {cameraError || "Unable to access camera"}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button
             onClick={() => galleryInputRef.current?.click()}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-6"
+            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-6"
           >
             <ImageIcon className="w-5 h-5 mr-2" />
             Choose from Gallery
@@ -603,7 +603,7 @@ export function ReceiptScanner({
                 startCamera();
               }}
               variant="outline"
-              className="w-full border-2 border-cyan-200 text-cyan-700 hover:bg-cyan-50 py-6"
+              className="w-full border-2 border-neutral-200 text-neutral-700 hover:bg-neutral-100 py-6"
             >
               <Camera className="w-5 h-5 mr-2" />
               Try Camera Again
@@ -613,7 +613,7 @@ export function ReceiptScanner({
           <Button
             onClick={handleClose}
             variant="ghost"
-            className="w-full text-eerie-500 hover:text-eerie-700"
+            className="w-full text-neutral-500 hover:text-neutral-900"
           >
             <X className="w-4 h-4 mr-2" />
             Cancel
@@ -625,14 +625,14 @@ export function ReceiptScanner({
 
   // Idle state - fallback UI (shouldn't normally be seen)
   return (
-    <Card className="w-full max-w-md mx-auto bg-white border-2 border-cyan-200">
+    <Card className="w-full max-w-md mx-auto bg-white border-2 border-brand-primary/30">
       {hiddenElements}
       <CardHeader className="text-center">
-        <div className="mx-auto mb-4 w-16 h-16 bg-cyan-500 rounded-full flex items-center justify-center">
+        <div className="mx-auto mb-4 w-16 h-16 bg-brand-primary rounded-full flex items-center justify-center">
           <Camera className="w-8 h-8 text-white" />
         </div>
-        <CardTitle className="text-xl text-eerie-800">Scan Receipt</CardTitle>
-        <CardDescription className="text-eerie-600">
+        <CardTitle className="text-xl text-neutral-900">Scan Receipt</CardTitle>
+        <CardDescription className="text-neutral-500">
           Take a photo or choose an image of your receipt
         </CardDescription>
       </CardHeader>
@@ -640,7 +640,7 @@ export function ReceiptScanner({
         <div className="space-y-3">
           <Button
             onClick={() => startCamera()}
-            className="w-full bg-cyan-500 hover:bg-cyan-600 text-white py-6"
+            className="w-full bg-brand-primary hover:bg-brand-primary-hover text-white py-6"
           >
             <Camera className="w-5 h-5 mr-2" />
             Start Camera
@@ -649,7 +649,7 @@ export function ReceiptScanner({
           <Button
             onClick={() => galleryInputRef.current?.click()}
             variant="outline"
-            className="w-full border-2 border-cyan-200 text-cyan-700 hover:bg-cyan-50 py-6"
+            className="w-full border-2 border-neutral-200 text-neutral-700 hover:bg-neutral-100 py-6"
           >
             <ImageIcon className="w-5 h-5 mr-2" />
             Choose from Gallery
@@ -659,7 +659,7 @@ export function ReceiptScanner({
         <Button
           onClick={handleClose}
           variant="ghost"
-          className="w-full text-eerie-500 hover:text-eerie-700"
+          className="w-full text-neutral-500 hover:text-neutral-900"
         >
           <X className="w-4 h-4 mr-2" />
           Cancel

@@ -21,7 +21,7 @@ export function NumberOfPeopleStep({
   onBack,
 }: NumberOfPeopleStepProps) {
   return (
-    <div className="min-h-screen flex flex-col p-6 relative z-10">
+    <div className="min-h-screen flex flex-col p-6 relative z-10 bg-neutral-50">
       <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full space-y-12">
         {/* Header */}
         <motion.div
@@ -29,12 +29,12 @@ export function NumberOfPeopleStep({
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2"
         >
-          <h2 className="text-4xl md:text-5xl font-heading font-bold text-black">
+          <h2 className="text-4xl md:text-5xl font-heading font-bold text-neutral-900">
             How many
             <br />
             people?
           </h2>
-          <p className="text-zinc-500 text-lg">Select the party size</p>
+          <p className="text-neutral-500 text-lg">Select the party size</p>
         </motion.div>
 
         {/* Grid Selection */}
@@ -55,8 +55,8 @@ export function NumberOfPeopleStep({
                 relative h-24 rounded-3xl text-3xl font-heading font-bold transition-all duration-300
                 ${
                   numberOfPeople === num.toString()
-                    ? "bg-black text-white shadow-xl shadow-black/20 scale-105"
-                    : "bg-white/40 backdrop-blur-sm border border-black/5 text-black hover:bg-white/60"
+                    ? "bg-brand-primary text-white shadow-xl shadow-brand-primary/25 scale-105"
+                    : "bg-white border border-neutral-200 text-neutral-900 hover:border-brand-primary/40"
                 }
               `}
             >
@@ -80,7 +80,7 @@ export function NumberOfPeopleStep({
               value={numberOfPeople}
               onChange={(e) => setNumberOfPeople(e.target.value)}
               placeholder="Or type a number..."
-              className="h-16 rounded-2xl bg-white/40 backdrop-blur-sm border-black/5 text-center text-xl font-heading font-bold placeholder:text-zinc-400 focus:bg-white/60 transition-all"
+              className="h-16 rounded-2xl bg-white border-neutral-200 text-center text-xl font-heading font-bold placeholder:text-neutral-400 focus:bg-white focus:border-brand-primary focus:ring-brand-primary/20 transition-all"
             />
           </div>
 
@@ -88,7 +88,7 @@ export function NumberOfPeopleStep({
             <motion.p
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
-              className="text-red-500 text-center font-medium bg-red-50/50 py-2 rounded-lg"
+              className="text-danger text-center font-medium bg-danger/10 py-2 rounded-lg"
             >
               Please enter between 2 and 20
             </motion.p>
@@ -105,14 +105,14 @@ export function NumberOfPeopleStep({
           <Button
             variant="ghost"
             onClick={onBack}
-            className="h-16 w-16 rounded-2xl border border-black/5 hover:bg-zinc-100 text-black"
+            className="h-16 w-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
           >
             <ArrowLeft className="w-6 h-6" />
           </Button>
           <Button
             onClick={() => isValid && onNext()}
             disabled={!isValid}
-            className="flex-1 h-16 rounded-2xl bg-black hover:bg-zinc-800 text-white text-xl font-heading font-bold shadow-xl shadow-black/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             Next Step
             <ArrowRight className="w-6 h-6 ml-2" />

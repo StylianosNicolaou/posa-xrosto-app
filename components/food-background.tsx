@@ -50,14 +50,14 @@ export function FoodBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#fcfcfc]">
-      {/* Dynamic Gradient Orbs - Monochrome/Grayscale */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-gray-200/40 rounded-full blur-[100px] animate-pulse-slow" />
+    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none bg-[#FAFBFD]">
+      {/* Dynamic Gradient Orbs - Using new brand colors */}
+      <div className="absolute top-[-20%] left-[-10%] w-[50vw] h-[50vw] bg-[#4FB3F6]/15 rounded-full blur-[100px] animate-pulse-slow" />
       <div
-        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-zinc-200/40 rounded-full blur-[120px] animate-pulse-slow"
+        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-[#A5AED6]/20 rounded-full blur-[120px] animate-pulse-slow"
         style={{ animationDelay: "2s" }}
       />
-      <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-slate-200/30 rounded-full blur-[80px]" />
+      <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-[#FF9F7A]/10 rounded-full blur-[80px]" />
 
       {/* Floating Food Elements - Fall from top to bottom */}
       {foods.map((food) => (

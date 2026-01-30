@@ -34,13 +34,13 @@ export function ItemsList({
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4 opacity-60">
-        <div className="w-24 h-24 rounded-full bg-zinc-100/50 flex items-center justify-center">
-          <Receipt className="w-10 h-10 text-zinc-400" />
+        <div className="w-24 h-24 rounded-full bg-neutral-100 flex items-center justify-center">
+          <Receipt className="w-10 h-10 text-neutral-400" />
         </div>
-        <p className="text-xl font-heading font-medium text-black">
+        <p className="text-xl font-heading font-medium text-neutral-900">
           No items yet
         </p>
-        <p className="text-zinc-500">
+        <p className="text-neutral-500">
           Tap the + button to add items manually
           <br />
           or scan a receipt
@@ -52,10 +52,10 @@ export function ItemsList({
   return (
     <div className="space-y-6 pb-24">
       {/* Total Header */}
-      <div className="bg-black text-white p-6 rounded-3xl shadow-xl shadow-black/20 flex justify-between items-center relative overflow-hidden">
+      <div className="bg-brand-primary text-white p-6 rounded-3xl shadow-xl shadow-brand-primary/30 flex justify-between items-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
         <div className="relative z-10">
-          <p className="text-zinc-400 text-sm font-medium uppercase tracking-wider">
+          <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
             Total Bill
           </p>
           <p className="text-4xl font-heading font-bold">
@@ -63,7 +63,7 @@ export function ItemsList({
           </p>
         </div>
         <div className="text-right relative z-10">
-          <p className="text-zinc-400 text-sm font-medium uppercase tracking-wider">
+          <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
             Items
           </p>
           <p className="text-2xl font-heading font-bold">{items.length}</p>
@@ -86,17 +86,17 @@ export function ItemsList({
                   group relative p-5 rounded-2xl border transition-all duration-300
                   ${
                     hasParticipants
-                      ? "bg-white/60 backdrop-blur-md border-black/5 hover:bg-white/80"
-                      : "bg-amber-50/80 border-amber-200/60"
+                      ? "bg-white border-neutral-200 hover:border-neutral-300"
+                      : "bg-warning/10 border-warning/30"
                   }
                 `}
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h3 className="text-lg font-bold text-black leading-tight">
+                    <h3 className="text-lg font-bold text-neutral-900 leading-tight">
                       {item.name}
                     </h3>
-                    <p className="text-2xl font-heading font-bold text-zinc-600 mt-1">
+                    <p className="text-2xl font-heading font-bold text-neutral-500 mt-1">
                       ${item.price.toFixed(2)}
                     </p>
                   </div>
@@ -104,7 +104,7 @@ export function ItemsList({
                     variant="ghost"
                     size="icon"
                     onClick={() => onRemoveItem(item.id)}
-                    className="text-zinc-300 hover:text-red-500 hover:bg-red-50 rounded-xl -mr-2 -mt-2"
+                    className="text-neutral-300 hover:text-danger hover:bg-danger/10 rounded-xl -mr-2 -mt-2"
                   >
                     <Trash2 className="w-5 h-5" />
                   </Button>
@@ -122,8 +122,8 @@ export function ItemsList({
                           text-xs font-medium px-3 py-1.5 rounded-lg transition-all
                           ${
                             isSelected
-                              ? "bg-black text-white border border-black"
-                              : "bg-transparent border border-zinc-200 text-zinc-400 hover:border-zinc-400 hover:text-zinc-600"
+                              ? "bg-brand-primary text-white border border-brand-primary"
+                              : "bg-transparent border border-neutral-200 text-neutral-500 hover:border-brand-primary/40 hover:text-neutral-700"
                           }
                         `}
                       >
@@ -134,7 +134,7 @@ export function ItemsList({
                 </div>
 
                 {!hasParticipants && (
-                  <div className="mt-3 flex items-center gap-2 text-amber-600 text-xs font-medium bg-amber-100/50 px-3 py-1.5 rounded-lg w-fit">
+                  <div className="mt-3 flex items-center gap-2 text-warning text-xs font-medium bg-warning/20 px-3 py-1.5 rounded-lg w-fit">
                     <AlertCircle className="w-3 h-3" />
                     Assign to someone
                   </div>
@@ -150,14 +150,14 @@ export function ItemsList({
         <Button
           variant="ghost"
           onClick={onBack}
-          className="h-16 w-16 rounded-2xl border border-black/5 hover:bg-zinc-100 text-black bg-white/40 backdrop-blur-md"
+          className="h-16 w-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
         >
           <ArrowLeft className="w-6 h-6" />
         </Button>
         <Button
           onClick={onCalculate}
           disabled={items.length === 0}
-          className="flex-1 h-16 rounded-2xl bg-black hover:bg-zinc-800 text-white text-xl font-heading font-bold shadow-xl shadow-black/20 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           Calculate Split
           <Calculator className="w-6 h-6 ml-2" />
