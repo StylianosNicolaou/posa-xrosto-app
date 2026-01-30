@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { FoodBackground } from "@/components/food-background";
+import { Footer } from "@/components/footer";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -83,6 +84,7 @@ export default function RootLayout({
 
         <div className="relative z-10 min-h-screen flex flex-col">
           {children}
+          <Footer />
         </div>
 
         <Analytics />
