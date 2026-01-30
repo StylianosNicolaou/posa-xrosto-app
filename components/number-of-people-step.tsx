@@ -32,20 +32,47 @@ export function NumberOfPeopleStep({
           <CardDescription className="text-eerie-600">How many people are dining together?</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <Label htmlFor="numberOfPeople" className="text-eerie-700 font-medium">
-              Number of People
+          <div className="space-y-4">
+            <Label className="text-eerie-700 font-medium">
+              Select number of people
             </Label>
-            <Input
-              id="numberOfPeople"
-              type="number"
-              min="2"
-              max="20"
-              value={numberOfPeople}
-              onChange={(e) => setNumberOfPeople(e.target.value)}
-              placeholder="Enter number (2-20)"
-              className="text-xl text-center h-14 border-2 border-glaucous-200 focus:border-glaucous-400"
-            />
+            
+            {/* Preset buttons */}
+            <div className="grid grid-cols-3 gap-3">
+              {[2, 3, 4, 5, 6, 7].map((num) => (
+                <Button
+                  key={num}
+                  type="button"
+                  variant="outline"
+                  onClick={() => setNumberOfPeople(num.toString())}
+                  className={`h-14 text-xl font-semibold transition-all duration-200 ${
+                    numberOfPeople === num.toString()
+                      ? "bg-glaucous-500 text-white border-glaucous-500 hover:bg-glaucous-600"
+                      : "bg-white text-eerie-700 border-2 border-glaucous-200 hover:border-glaucous-400 hover:bg-glaucous-50"
+                  }`}
+                >
+                  {num}
+                </Button>
+              ))}
+            </div>
+            
+            {/* Custom input */}
+            <div className="space-y-2">
+              <Label htmlFor="numberOfPeople" className="text-sm text-eerie-600">
+                Or enter a custom number (2-20)
+              </Label>
+              <Input
+                id="numberOfPeople"
+                type="number"
+                min="2"
+                max="20"
+                value={numberOfPeople}
+                onChange={(e) => setNumberOfPeople(e.target.value)}
+                placeholder="Enter number"
+                className="text-xl text-center h-14 border-2 border-glaucous-200 focus:border-glaucous-400"
+              />
+            </div>
+            
             {numberOfPeople && !isValid && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-700 text-center">Please enter a number between 2 and 20</p>
