@@ -7,7 +7,6 @@ import { ReceiptScanner } from "./receipt-scanner";
 import { Button } from "@/components/ui/button";
 import { Camera, Plus } from "lucide-react";
 import type { Item } from "@/types";
-import { motion, AnimatePresence } from "framer-motion";
 import {
   Sheet,
   SheetContent,

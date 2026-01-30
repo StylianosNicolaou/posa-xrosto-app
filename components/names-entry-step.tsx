@@ -101,7 +101,7 @@ export function NamesEntryStep({
           className="text-center space-y-2 pt-8"
         >
           <h2 className="text-4xl font-heading font-bold text-neutral-900">
-            Who's eating?
+            Who&apos;s eating?
           </h2>
           <p className="text-neutral-500 text-lg">Name your squad members</p>
         </motion.div>
