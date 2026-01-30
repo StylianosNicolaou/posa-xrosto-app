@@ -19,44 +19,122 @@ interface ReceiptData {
   date?: string;
 }
 
-const EXTRACTION_PROMPT = `You are an expert receipt parser. Extract all purchased items from this receipt image.
+const EXTRACTION_PROMPT = `You are an expert receipt parser with 100% accuracy. Extract ALL purchased items from this receipt image.
 
-## CRITICAL RULES
+## YOUR TASK
+Identify every item that was purchased and return structured data. Be thorough - missing items means someone doesn't get charged fairly.
 
-### What to EXTRACT:
-- Menu items, food, drinks, products that were purchased
-- The QUANTITY shown (number before item name, e.g., "3" in "3 PIZZA")
-- The EXACT PRICE shown on the receipt for that line (this is always the TOTAL for that line, NOT per-unit)
+## EXTRACTION RULES
 
-### What to IGNORE completely:
-- Restaurant name, address, phone, table number, server, check number
-- Dates, times, transaction IDs
-- Subtotal, Total, Tax, Tip, Gratuity, Service Charge, Discounts
-- "Thank you" messages, footer text
+### EXTRACT these (purchased items):
+- Food items (appetizers, mains, desserts, sides)
+- Drinks (alcoholic and non-alcoholic)
+- Products/merchandise
+- Add-ons, extras, modifications that have a price
 
-### PRICE EXTRACTION RULE (VERY IMPORTANT):
-The price shown next to an item is the LINE TOTAL (quantity × unit price).
-- Example: "3 PIZZA 45.00" means 3 pizzas for $45.00 total
-- You must return: {"name": "Pizza", "price": 45.00, "quantity": 3}
-- DO NOT divide the price by quantity. Use the exact price shown.
+### NEVER EXTRACT these:
+- Restaurant/store name, logo, slogan
+- Address, phone, website, email
+- Table #, server name, guest count, check #, order #
+- Date, time, timestamps
+- SUBTOTAL, TOTAL, GRAND TOTAL
+- TAX (sales tax, VAT, GST, liquor tax)
+- TIP, GRATUITY, SERVICE CHARGE
+- DISCOUNT, COUPON, PROMO
+- Payment method (VISA, CASH, etc.)
+- Balance, change, amount tendered
+- "Thank you", "Come again", promotional text
+- Loyalty points, rewards
+
+### PRICE RULE (CRITICAL):
+The price shown on the receipt is ALWAYS the line total (quantity × unit price).
+- NEVER divide by quantity
+- NEVER calculate unit prices
+- Use the EXACT number shown on the receipt
 
 ### QUANTITY RULE:
-- Look for a number at the START of the line (e.g., "3 LASAGNA" = quantity 3)
-- If no quantity shown, assume quantity is 1
-- Always include the quantity field, even if it's 1
+- Number BEFORE item name = quantity (e.g., "3 BEER" = qty 3)
+- Number AFTER item name is usually a code, ignore it
+- "x2" or "×3" after name = quantity
+- No number shown = quantity 1
+
+### NAME CLEANING:
+- Remove item codes/SKUs (e.g., "#1234 BURGER" → "Burger")
+- Capitalize properly (e.g., "CHICKEN WINGS" → "Chicken Wings")
+- Keep modifiers (e.g., "LG FRIES" → "Large Fries")
+- Keep combo names (e.g., "#5 COMBO" → "#5 Combo")
+
+## FEW-SHOT EXAMPLES
+
+### Example 1: Basic receipt
+Receipt shows:
+  CHICKEN BURRITO     $8.79
+  LARGE DRINK         $2.19
+  TAX                 $0.88
+  TOTAL              $11.86
+
+Output:
+{"items":[{"name":"Chicken Burrito","price":8.79,"quantity":1},{"name":"Large Drink","price":2.19,"quantity":1}],"restaurant":null,"date":null}
+
+### Example 2: With quantities
+Receipt shows:
+  3 BIL-CHANTI       114.00
+  1 KETLE ONE         10.00
+  2 ANTIPASTO         40.00
+  SUBTOTAL           164.00
+
+Output:
+{"items":[{"name":"Btl Chianti","price":114.00,"quantity":3},{"name":"Kettle One","price":10.00,"quantity":1},{"name":"Antipasto","price":40.00,"quantity":2}],"restaurant":null,"date":null}
+
+### Example 3: Modifiers and add-ons
+Receipt shows:
+  MARGHERITA PIZZA   $14.99
+    ADD PEPPERONI     $2.00
+    ADD MUSHROOMS     $1.50
+  GARLIC BREAD        $4.99
+
+Output:
+{"items":[{"name":"Margherita Pizza","price":14.99,"quantity":1},{"name":"Add Pepperoni","price":2.00,"quantity":1},{"name":"Add Mushrooms","price":1.50,"quantity":1},{"name":"Garlic Bread","price":4.99,"quantity":1}],"restaurant":null,"date":null}
+
+### Example 4: Combo meals
+Receipt shows:
+  #3 BIG MAC MEAL     $9.99
+  6PC NUGGETS         $4.49
+  APPLE PIE x2        $2.00
+
+Output:
+{"items":[{"name":"#3 Big Mac Meal","price":9.99,"quantity":1},{"name":"6pc Nuggets","price":4.49,"quantity":1},{"name":"Apple Pie","price":2.00,"quantity":2}],"restaurant":null,"date":null}
+
+### Example 5: Happy hour / discounts (ignore discount lines)
+Receipt shows:
+  BEER                $6.00
+  HAPPY HOUR         -$2.00
+  WINGS              $12.00
+  TOTAL              $16.00
+
+Output:
+{"items":[{"name":"Beer","price":6.00,"quantity":1},{"name":"Wings","price":12.00,"quantity":1}],"restaurant":null,"date":null}
+
+### Example 6: Weight-based items
+Receipt shows:
+  SALMON 0.75LB      $11.25
+  RIBEYE 1.2LB       $23.40
+
+Output:
+{"items":[{"name":"Salmon 0.75lb","price":11.25,"quantity":1},{"name":"Ribeye 1.2lb","price":23.40,"quantity":1}],"restaurant":null,"date":null}
 
 ## OUTPUT FORMAT
-Return ONLY valid JSON, no markdown code blocks, no explanation:
+Return ONLY valid JSON. No markdown. No explanation. No code blocks.
+
 {
   "items": [
-    {"name": "Item Name", "price": 45.00, "quantity": 3},
-    {"name": "Another Item", "price": 12.50, "quantity": 1}
+    {"name": "Item Name", "price": 0.00, "quantity": 1}
   ],
-  "restaurant": "Restaurant Name or null",
-  "date": "Date string or null"
+  "restaurant": "Name if visible, otherwise null",
+  "date": "Date if visible in any format, otherwise null"
 }
 
-If no items found: {"items": [], "error": "Could not identify any menu items"}`;
+If you cannot find ANY items: {"items":[],"error":"No menu items found - image may be unclear or not a receipt"}`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -89,10 +167,15 @@ export async function POST(request: NextRequest) {
       imageUrl = `data:image/jpeg;base64,${imageData}`;
     }
 
-    // Call GPT-4o Vision
+    // Call GPT-4o Vision with optimized settings
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
       messages: [
+        {
+          role: "system",
+          content:
+            "You are a precise receipt parser. Output only valid JSON. Never include markdown formatting or explanations.",
+        },
         {
           role: "user",
           content: [
@@ -104,14 +187,14 @@ export async function POST(request: NextRequest) {
               type: "image_url",
               image_url: {
                 url: imageUrl,
-                detail: "high",
+                detail: "high", // High detail for better text recognition
               },
             },
           ],
         },
       ],
-      max_tokens: 2000,
-      temperature: 0.1, // Low temperature for consistent parsing
+      max_tokens: 4000, // Increased for long receipts
+      temperature: 0, // Zero temperature for maximum consistency
     });
 
     const content = response.choices[0]?.message?.content;
