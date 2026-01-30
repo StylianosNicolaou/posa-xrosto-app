@@ -96,14 +96,20 @@ export function ItemForm({
       </div>
 
       {/* Add Button */}
-      <Button
-        onClick={onAddItem}
-        disabled={!isValid}
-        className="w-full h-20 rounded-[2rem] bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 disabled:shadow-none transition-all mt-8"
+      <motion.div
+        whileHover={{ scale: isValid ? 1.02 : 1 }}
+        whileTap={{ scale: isValid ? 0.98 : 1 }}
+        className="mt-8"
       >
-        <Plus className="w-6 h-6 mr-2" />
-        Add to Order
-      </Button>
+        <Button
+          onClick={onAddItem}
+          disabled={!isValid}
+          className="w-full h-20 rounded-[2rem] bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 disabled:shadow-none transition-all"
+        >
+          <Plus className="w-6 h-6 mr-2" />
+          Add to Order
+        </Button>
+      </motion.div>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "@/components/progress-bar";
+import { AnimatedNumber } from "@/components/animated-number";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,9 +88,14 @@ export function ResultsStep({
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-2 pt-4"
         >
-          <div className="inline-flex items-center justify-center p-3 bg-success/15 rounded-full mb-2">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.2 }}
+            className="inline-flex items-center justify-center p-3 bg-success/15 rounded-full mb-2"
+          >
             <Check className="w-6 h-6 text-success" />
-          </div>
+          </motion.div>
           <h2 className="text-4xl font-heading font-bold text-neutral-900">
             All Settled!
           </h2>
@@ -108,9 +114,10 @@ export function ResultsStep({
             <p className="text-white/70 font-medium uppercase tracking-widest mb-2">
               Total Bill
             </p>
-            <h3 className="text-6xl md:text-7xl font-heading font-bold tracking-tight">
-              ${totalAmount.toFixed(2)}
-            </h3>
+            <AnimatedNumber
+              value={totalAmount}
+              className="text-6xl md:text-7xl font-heading font-bold tracking-tight"
+            />
             <div className="mt-4 inline-block px-4 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/10 text-sm font-medium">
               Split among {namesCount} people
             </div>
@@ -124,27 +131,33 @@ export function ResultsStep({
               key={person.name}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + index * 0.05 }}
-              className="group bg-white border border-neutral-200 p-6 rounded-[2rem] hover:border-neutral-300 transition-all duration-300"
+              transition={{ delay: 0.2 + index * 0.08 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="group bg-white border border-neutral-200 p-6 rounded-[2rem] hover:border-neutral-300 hover:shadow-lg transition-shadow duration-300 cursor-default"
             >
               <div className="flex justify-between items-start mb-4">
                 <h3 className="text-xl font-bold text-neutral-900">{person.name}</h3>
-                <div className="text-2xl font-heading font-bold text-brand-primary">
-                  ${person.total.toFixed(2)}
-                </div>
+                <AnimatedNumber
+                  value={person.total}
+                  className="text-2xl font-heading font-bold text-brand-primary"
+                />
               </div>
 
               <div className="space-y-2">
                 {person.items.map((item, i) => (
-                  <div
+                  <motion.div
                     key={i}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.08 + i * 0.03 }}
                     className="flex justify-between text-sm text-neutral-500 group-hover:text-neutral-700 transition-colors"
                   >
                     <span>{item.name}</span>
                     <span className="font-medium">
                       ${item.share.toFixed(2)}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </motion.div>

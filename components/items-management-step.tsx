@@ -8,6 +8,7 @@ import { ProgressBar } from "@/components/progress-bar";
 import { Button } from "@/components/ui/button";
 import { Camera, Plus } from "lucide-react";
 import type { Item } from "@/types";
+import { motion } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -111,15 +112,22 @@ export function ItemsManagementStep({
       </div>
 
       {/* Floating Action Button - ACCENT color (2% usage, rare!) */}
-      <div className="fixed bottom-8 right-6 z-30">
+      <motion.div
+        className="fixed bottom-8 right-6 z-30"
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.3 }}
+      >
         <Sheet open={isFormOpen} onOpenChange={setIsFormOpen}>
           <SheetTrigger asChild>
-            <Button
-              size="icon"
-              className="h-16 w-16 rounded-full bg-brand-accent text-neutral-900 shadow-2xl shadow-brand-accent/40 hover:bg-brand-accent-hover hover:scale-110 transition-all active:scale-95"
-            >
-              <Plus className="w-8 h-8" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                size="icon"
+                className="h-16 w-16 rounded-full bg-brand-accent text-neutral-900 shadow-2xl shadow-brand-accent/40 hover:bg-brand-accent-hover transition-colors"
+              >
+                <Plus className="w-8 h-8" />
+              </Button>
+            </motion.div>
           </SheetTrigger>
           <SheetContent
             side="bottom"
@@ -143,7 +151,7 @@ export function ItemsManagementStep({
             </div>
           </SheetContent>
         </Sheet>
-      </div>
+      </motion.div>
     </div>
   );
 }

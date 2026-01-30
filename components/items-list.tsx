@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { AnimatedNumber } from "@/components/animated-number";
 import {
   Calculator,
   ArrowLeft,
@@ -51,23 +52,35 @@ export function ItemsList({
   return (
     <div className="space-y-6 pb-24">
       {/* Total Header */}
-      <div className="bg-brand-primary text-white p-6 rounded-3xl shadow-xl shadow-brand-primary/30 flex justify-between items-center relative overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-brand-primary text-white p-6 rounded-3xl shadow-xl shadow-brand-primary/30 flex justify-between items-center relative overflow-hidden"
+      >
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
         <div className="relative z-10">
           <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
             Total Bill
           </p>
-          <p className="text-4xl font-heading font-bold">
-            ${totalAmount.toFixed(2)}
-          </p>
+          <AnimatedNumber
+            value={totalAmount}
+            className="text-4xl font-heading font-bold block"
+          />
         </div>
         <div className="text-right relative z-10">
           <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
             Items
           </p>
-          <p className="text-2xl font-heading font-bold">{items.length}</p>
+          <motion.p
+            key={items.length}
+            initial={{ scale: 1.2 }}
+            animate={{ scale: 1 }}
+            className="text-2xl font-heading font-bold"
+          >
+            {items.length}
+          </motion.p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Items List */}
       <div className="space-y-3">
@@ -114,11 +127,12 @@ export function ItemsList({
                   {names.map((name) => {
                     const isSelected = item.participants.includes(name);
                     return (
-                      <button
+                      <motion.button
                         key={name}
+                        whileTap={{ scale: 0.92 }}
                         onClick={() => onToggleItemParticipant(item.id, name)}
                         className={`
-                          text-xs font-medium px-3 py-1.5 rounded-lg transition-all
+                          text-xs font-medium px-3 py-1.5 rounded-lg transition-colors
                           ${
                             isSelected
                               ? "bg-brand-primary text-white border border-brand-primary"
@@ -127,7 +141,7 @@ export function ItemsList({
                         `}
                       >
                         {name}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
