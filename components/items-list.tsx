@@ -146,6 +146,18 @@ export function ItemsList({
                   })}
                 </div>
 
+                {/* Per-person share */}
+                {hasParticipants && (
+                  <motion.p
+                    key={item.participants.length}
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-3 text-xs text-neutral-500"
+                  >
+                    ${(item.price / item.participants.length).toFixed(2)} per person
+                  </motion.p>
+                )}
+
                 {!hasParticipants && (
                   <div className="mt-3 flex items-center gap-2 text-warning text-xs font-medium bg-warning/20 px-3 py-1.5 rounded-lg w-fit">
                     <AlertCircle className="w-3 h-3" />
@@ -169,7 +181,7 @@ export function ItemsList({
         </Button>
         <Button
           onClick={onCalculate}
-          disabled={items.length === 0}
+          disabled={items.length === 0 || items.some(item => item.participants.length === 0)}
           className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           Calculate Split
