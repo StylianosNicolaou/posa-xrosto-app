@@ -8,7 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Calculator, RotateCcw, ArrowLeft, Trophy, Share2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Calculator, RotateCcw, ArrowLeft, Trophy, Share2, FileText, List, ChevronDown } from "lucide-react";
 import type { PersonTotal } from "@/types";
 
 interface ResultsStepProps {
@@ -26,17 +32,33 @@ export function ResultsStep({
   onBack,
   onReset,
 }: ResultsStepProps) {
-  const handleShare = async () => {
-    const shareText = `Bill Split Results:\nTotal: $${totalAmount.toFixed(
-      2
-    )}\n\n${results
+  const generateSimpleBill = () => {
+    return `\nTotal: $${totalAmount.toFixed(2)}\n\n${results
       .map((person) => `${person.name}: $${person.total.toFixed(2)}`)
       .join("\n")}\n\nSplit with Posa Xrosto!`;
+  };
+
+  const generateFullBill = () => {
+    const personDetails = results
+      .map((person) => {
+        const itemsList = person.items
+          .map((item) => `  • ${item.name}: $${item.share.toFixed(2)}`)
+          .join("\n");
+        return `${person.name}: $${person.total.toFixed(2)}\n${itemsList}`;
+      })
+      .join("\n\n");
+
+    return `\nTotal: $${totalAmount.toFixed(2)}\n\n${personDetails}\n\nSplit with Posa Xrosto!`;
+  };
+
+  const handleShare = async (type: "simple" | "full") => {
+    const shareText = type === "simple" ? generateSimpleBill() : generateFullBill();
+    const title = type === "simple" ? "Simple Bill Split Result:" : "Full Bill Split Result:";
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Bill Split Results",
+          title,
           text: shareText,
         });
       } catch (err) {
@@ -116,13 +138,33 @@ export function ResultsStep({
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Items
               </Button>
-              <Button
-                onClick={handleShare}
-                className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white"
-              >
-                <Share2 className="w-4 h-4 mr-2" />
-                Share Results
-              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-white">
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share Results
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="center" className="w-48">
+                  <DropdownMenuItem 
+                    onClick={() => handleShare("full")}
+                    className="cursor-pointer"
+                  >
+                    <List className="w-4 h-4 mr-2" />
+                    Full Bill
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleShare("simple")}
+                    className="cursor-pointer"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Simple Bill
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
               <Button
                 onClick={onReset}
                 className="flex-1 bg-amaranth-500 hover:bg-amaranth-600 text-white"
