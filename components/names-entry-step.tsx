@@ -4,7 +4,19 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, ArrowRight, UserPlus } from "lucide-react"
+import { ArrowLeft, ArrowRight, UserPlus, Shuffle } from "lucide-react"
+
+const COLORS = [
+  "Red", "Blue", "Green", "Yellow", "Purple", "Orange", "Pink", "Teal",
+  "Golden", "Silver", "Crimson", "Azure", "Emerald", "Coral", "Violet",
+  "Indigo", "Scarlet", "Jade", "Amber", "Ivory"
+]
+
+const ANIMALS = [
+  "Panda", "Tiger", "Eagle", "Wolf", "Fox", "Bear", "Lion", "Hawk",
+  "Dolphin", "Owl", "Falcon", "Panther", "Phoenix", "Dragon", "Lynx",
+  "Cobra", "Raven", "Jaguar", "Shark", "Koala"
+]
 
 interface NamesEntryStepProps {
   currentNames: string[]
@@ -21,6 +33,25 @@ export function NamesEntryStep({ currentNames, setCurrentNames, isValid, onNext,
     setCurrentNames(newNames)
   }
 
+  const assignRandomNames = () => {
+    const count = currentNames.length
+    const usedCombos = new Set<string>()
+    const randomNames: string[] = []
+
+    while (randomNames.length < count) {
+      const color = COLORS[Math.floor(Math.random() * COLORS.length)]
+      const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)]
+      const combo = `${color} ${animal}`
+      
+      if (!usedCombos.has(combo)) {
+        usedCombos.add(combo)
+        randomNames.push(combo)
+      }
+    }
+
+    setCurrentNames(randomNames)
+  }
+
   return (
     <div className="min-h-screen bg-amaranth-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white border-2 border-amaranth-200 shadow-lg">
@@ -32,6 +63,17 @@ export function NamesEntryStep({ currentNames, setCurrentNames, isValid, onNext,
           <CardDescription className="text-eerie-600">Enter the name of each person dining</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Random names button */}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={assignRandomNames}
+            className="w-full border-2 border-dashed border-amaranth-300 text-amaranth-600 hover:bg-amaranth-50 hover:border-amaranth-400"
+          >
+            <Shuffle className="w-4 h-4 mr-2" />
+            Assign Random Names
+          </Button>
+
           <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
             {currentNames.map((name, index) => (
               <div key={index} className="space-y-2">
