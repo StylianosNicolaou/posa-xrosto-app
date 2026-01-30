@@ -53,7 +53,7 @@ export function ItemsManagementStep({
 
   if (showScanner) {
     return (
-      <div className="min-h-screen bg-cyan-50 p-4 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 p-4 flex items-center justify-center">
         <ReceiptScanner
           onItemsScanned={handleScannedItems}
           onClose={() => setShowScanner(false)}
@@ -63,12 +63,12 @@ export function ItemsManagementStep({
   }
 
   return (
-    <div className="min-h-screen bg-cyan-50 p-4">
+    <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-center mb-4">
           <Button
             onClick={() => setShowScanner(true)}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white"
+            className="bg-gray-900 hover:bg-gray-800 text-white shadow-md"
           >
             <Camera className="w-4 h-4 mr-2" />
             Scan Receipt

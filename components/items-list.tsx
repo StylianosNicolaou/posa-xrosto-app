@@ -38,16 +38,16 @@ export function ItemsList({
   const hasUnassignedItems = items.some((item) => item.participants.length === 0);
 
   return (
-    <Card className="bg-white border-2 border-vanilla-200 shadow-lg">
+    <Card className="bg-white border border-gray-300 shadow-xl">
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-vanilla-500 rounded-full flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-white" />
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center shadow-md">
+              <ShoppingBag className="w-6 h-6 text-white" />
             </div>
-            <span className="text-eerie-800">Items Added ({items.length})</span>
+            <span className="text-gray-900 text-lg font-bold">Items Added ({items.length})</span>
           </div>
-          <Badge className="text-lg px-4 py-2 bg-amaranth-500 text-white">
+          <Badge className="text-base px-3 py-1.5 bg-gray-900 text-white">
             <DollarSign className="w-4 h-4 mr-1" />
             {totalAmount.toFixed(2)}
           </Badge>
@@ -60,26 +60,26 @@ export function ItemsList({
             return (
               <div
                 key={item.id}
-                className={`p-4 border-2 rounded-xl hover:shadow-md transition-all duration-200 ${
+                className={`p-4 border hover:shadow-lg transition-all duration-200 ${
                   hasParticipants 
-                    ? "border-cyan-100 bg-cyan-50" 
-                    : "border-amber-300 bg-amber-50"
+                    ? "border-gray-300 bg-white" 
+                    : "border-gray-400 bg-gray-50"
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="font-semibold text-eerie-800">
+                      <h4 className="font-semibold text-gray-900">
                         {item.name}
                       </h4>
-                      <span className="font-bold text-xl text-glaucous-600">
+                      <span className="font-bold text-xl text-gray-900">
                         ${item.price.toFixed(2)}
                       </span>
                     </div>
                     
                     {/* Participant Selection */}
                     <div className="space-y-2">
-                      <p className="text-xs text-eerie-500 font-medium">
+                      <p className="text-xs text-gray-600 font-medium">
                         Click names to assign:
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -90,10 +90,10 @@ export function ItemsList({
                               key={name}
                               variant="outline"
                               onClick={() => onToggleItemParticipant(item.id, name)}
-                              className={`cursor-pointer transition-all duration-200 select-none ${
+                              className={`cursor-pointer transition-all duration-200 select-none border font-medium ${
                                 isSelected
-                                  ? "bg-amaranth-500 text-white border-amaranth-500 hover:bg-amaranth-600"
-                                  : "bg-white text-eerie-600 border-eerie-300 hover:border-amaranth-400 hover:text-amaranth-600"
+                                  ? "bg-gray-800 text-white border-gray-800 hover:bg-gray-700"
+                                  : "bg-white text-gray-700 border-gray-400 hover:border-gray-500 hover:bg-gray-50"
                               }`}
                             >
                               {name}
@@ -104,12 +104,12 @@ export function ItemsList({
                     </div>
                     
                     {hasParticipants ? (
-                      <p className="text-sm text-eerie-600 bg-white px-2 py-1 rounded-md inline-block">
+                      <p className="text-sm text-gray-700 bg-gray-50 px-3 py-2 inline-block border border-gray-200 font-medium">
                         ${(item.price / item.participants.length).toFixed(2)} per person
                       </p>
                     ) : (
-                      <p className="text-sm text-amber-700 bg-amber-100 px-2 py-1 rounded-md inline-flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" />
+                      <p className="text-sm text-white bg-gray-800 px-3 py-2 inline-flex items-center gap-2 border border-gray-800 font-medium">
+                        <AlertCircle className="w-4 h-4" />
                         No one assigned yet
                       </p>
                     )}
@@ -118,21 +118,21 @@ export function ItemsList({
                     variant="ghost"
                     size="sm"
                     onClick={() => onRemoveItem(item.id)}
-                    className="ml-3 text-red-500 hover:text-red-700 hover:bg-red-50"
+                    className="ml-3 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-5 h-5" />
                   </Button>
                 </div>
               </div>
             );
           })}
         </div>
-        <Separator className="my-6" />
+        <Separator className="my-6 bg-gray-200" />
         
         {hasUnassignedItems && (
-          <div className="mb-4 p-3 bg-amber-100 border border-amber-300 rounded-lg flex items-center gap-2 text-amber-800">
-            <AlertCircle className="w-4 h-4 flex-shrink-0" />
-            <p className="text-sm">
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-300 flex items-center gap-2 text-gray-800">
+            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+            <p className="text-sm font-medium">
               Some items have no one assigned. They won&apos;t be included in the split.
             </p>
           </div>
@@ -142,7 +142,7 @@ export function ItemsList({
           <Button
             variant="outline"
             onClick={onBack}
-            className="flex-1 border-2 border-eerie-200 text-eerie-700 bg-white hover:bg-eerie-50"
+            className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
@@ -150,7 +150,7 @@ export function ItemsList({
           <Button
             onClick={onCalculate}
             disabled={items.length === 0}
-            className="flex-1 bg-glaucous-500 hover:bg-glaucous-600 text-white py-6 text-lg disabled:opacity-50 disabled:bg-gray-300"
+            className="flex-1 bg-gray-900 hover:bg-gray-800 text-white py-6 text-lg disabled:opacity-50 disabled:bg-gray-300 shadow-md font-semibold"
           >
             <Calculator className="w-5 h-5 mr-2" />
             Calculate Split
