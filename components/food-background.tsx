@@ -1,51 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 
 const FOOD_ICONS = [
-  "🍕",
-  "🍔",
-  "🍟",
-  "🍣",
-  "🌮",
-  "🍩",
-  "🥑",
-  "🥓",
-  "🥩",
-  "🍤",
-  "🍪",
-  "🍫",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Pizza.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Hamburger.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/French%20Fries.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Sushi.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Doughnut.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Taco.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Sandwich.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Popcorn.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Hot%20Dog.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Soft%20Ice%20Cream.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Bagel.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Pancakes.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Croissant.png",
+  "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Food/Burrito.png",
 ];
 
 interface FloatingFood {
   id: number;
   icon: string;
   x: number;
-  y: number;
   duration: number;
   delay: number;
   scale: number;
   rotation: number;
+  swayAmount: number;
 }
 
 export function FoodBackground() {
   const [foods, setFoods] = useState<FloatingFood[]>([]);
-  const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 1000], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 1000], [0, -200]);
 
   useEffect(() => {
     // Generate random food items
-    const items: FloatingFood[] = Array.from({ length: 15 }).map((_, i) => ({
+    const items: FloatingFood[] = Array.from({ length: 18 }).map((_, i) => ({
       id: i,
       icon: FOOD_ICONS[Math.floor(Math.random() * FOOD_ICONS.length)],
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      duration: 20 + Math.random() * 30,
-      delay: Math.random() * 10,
-      scale: 0.8 + Math.random() * 1.5,
+      x: Math.random() * 85 + 5, // Random horizontal position (5% to 90%)
+      duration: 15 + Math.random() * 20, // Fall duration 15-35s
+      delay: Math.random() * 15, // Staggered start
+      scale: 0.4 + Math.random() * 0.6, // Random sizes from 0.4x to 1x
       rotation: Math.random() * 360,
+      swayAmount: 3 + Math.random() * 5, // Horizontal sway during fall
     }));
     setFoods(items);
   }, []);
@@ -60,47 +59,52 @@ export function FoodBackground() {
       />
       <div className="absolute top-[40%] left-[30%] w-[40vw] h-[40vw] bg-slate-200/30 rounded-full blur-[80px]" />
 
-      {/* Floating Food Elements - Grayscale */}
-      {foods.map((food, i) => (
+      {/* Floating Food Elements - Fall from top to bottom */}
+      {foods.map((food) => (
         <motion.div
           key={food.id}
           initial={{
             x: `${food.x}vw`,
-            y: `${food.y}vh`,
+            y: "-15vh", // Start above screen
             opacity: 0,
             rotate: food.rotation,
-            scale: 0,
+            scale: food.scale,
           }}
           animate={{
-            y: [
-              `${food.y}vh`,
-              `${food.y + (i % 2 === 0 ? 10 : -10)}vh`,
-              `${food.y}vh`,
-            ],
+            y: "115vh", // Fall past bottom of screen
             x: [
               `${food.x}vw`,
-              `${food.x + (i % 2 === 0 ? 5 : -5)}vw`,
+              `${food.x + food.swayAmount}vw`,
+              `${food.x - food.swayAmount}vw`,
               `${food.x}vw`,
             ],
-            rotate: [food.rotation, food.rotation + 45, food.rotation],
-            opacity: [0, 0.1, 0], // Lower opacity for subtle look
-            scale: [0, food.scale, 0],
+            rotate: [food.rotation, food.rotation + 180, food.rotation + 360],
+            opacity: [0, 0.7, 0.7, 0.7, 0], // Fade in at top, fade out at bottom
           }}
           transition={{
             duration: food.duration,
             repeat: Infinity,
             delay: food.delay,
-            ease: "easeInOut",
+            ease: "linear",
+            x: {
+              duration: food.duration,
+              repeat: Infinity,
+              ease: "easeInOut",
+            },
           }}
           style={{
             position: "absolute",
-            fontSize: `${food.scale * 3}rem`,
-            filter: "blur(1px) grayscale(100%)", // Force grayscale
-            y: i % 2 === 0 ? y1 : y2,
+            width: `${food.scale * 100}px`,
+            height: `${food.scale * 100}px`,
+            left: 0,
+            top: 0,
           }}
-          className="text-black/10 mix-blend-multiply"
         >
-          {food.icon}
+          <img
+            src={food.icon}
+            alt=""
+            className="w-full h-full object-contain drop-shadow-lg"
+          />
         </motion.div>
       ))}
     </div>
