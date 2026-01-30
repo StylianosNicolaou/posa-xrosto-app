@@ -34,6 +34,7 @@ export default function PosaXrosto() {
     handleAddItem,
     handleAddMultipleItems,
     handleRemoveItem,
+    handleToggleItemParticipant,
     handleCalculate,
     handleReset,
     toggleParticipant,
@@ -85,6 +86,7 @@ export default function PosaXrosto() {
         onAddItem={handleAddItem}
         onAddMultipleItems={handleAddMultipleItems}
         onRemoveItem={handleRemoveItem}
+        onToggleItemParticipant={handleToggleItemParticipant}
         onCalculate={handleCalculate}
         onBack={() => setStep(2)}
       />

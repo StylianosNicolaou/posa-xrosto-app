@@ -76,9 +76,22 @@ export function useBillSplit() {
       id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
       name: scannedItem.name,
       price: scannedItem.price,
-      participants: [...names], // Default to all participants
+      participants: [], // No participants by default - user must select
     }));
     setItems([...items, ...newItems]);
+  };
+
+  const handleToggleItemParticipant = (itemId: string, participantName: string) => {
+    setItems(items.map((item) => {
+      if (item.id !== itemId) return item;
+      const hasParticipant = item.participants.includes(participantName);
+      return {
+        ...item,
+        participants: hasParticipant
+          ? item.participants.filter((p) => p !== participantName)
+          : [...item.participants, participantName],
+      };
+    }));
   };
 
   const handleRemoveItem = (id: string) => {
@@ -93,6 +106,9 @@ export function useBillSplit() {
     }));
 
     items.forEach((item) => {
+      // Skip items with no participants assigned
+      if (item.participants.length === 0) return;
+      
       const sharePerPerson = item.price / item.participants.length;
       item.participants.forEach((participant) => {
         const person = personTotals.find((p) => p.name === participant);
@@ -155,6 +171,7 @@ export function useBillSplit() {
     handleAddItem,
     handleAddMultipleItems,
     handleRemoveItem,
+    handleToggleItemParticipant,
     handleCalculate,
     handleReset,
     toggleParticipant,
