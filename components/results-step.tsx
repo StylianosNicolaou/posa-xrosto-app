@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ProgressBar } from "@/components/progress-bar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,8 +78,9 @@ export function ResultsStep({
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-6 relative z-10 pb-24 bg-neutral-50">
-      <div className="max-w-4xl mx-auto w-full space-y-8">
+    <div className="min-h-screen flex flex-col relative z-10 pb-24 bg-neutral-50">
+      <ProgressBar currentStep={4} />
+      <div className="max-w-4xl mx-auto w-full space-y-8 p-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

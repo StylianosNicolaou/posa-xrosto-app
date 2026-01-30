@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ProgressBar } from "@/components/progress-bar";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -21,8 +22,9 @@ export function NumberOfPeopleStep({
   onBack,
 }: NumberOfPeopleStepProps) {
   return (
-    <div className="min-h-screen flex flex-col p-6 relative z-10 bg-neutral-50">
-      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full space-y-12">
+    <div className="min-h-screen flex flex-col relative z-10 bg-neutral-50">
+      <ProgressBar currentStep={1} />
+      <div className="flex-1 flex flex-col justify-center max-w-lg mx-auto w-full space-y-12 p-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

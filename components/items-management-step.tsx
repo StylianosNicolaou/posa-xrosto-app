@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ItemForm } from "./item-form";
 import { ItemsList } from "./items-list";
 import { ReceiptScanner } from "./receipt-scanner";
+import { ProgressBar } from "@/components/progress-bar";
 import { Button } from "@/components/ui/button";
 import { Camera, Plus } from "lucide-react";
 import type { Item } from "@/types";
@@ -76,8 +77,13 @@ export function ItemsManagementStep({
 
   return (
     <div className="min-h-screen flex flex-col relative z-10 pb-32 bg-neutral-50">
+      {/* Progress Bar */}
+      <div className="sticky top-0 z-30">
+        <ProgressBar currentStep={3} />
+      </div>
+
       {/* Header / Actions */}
-      <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-xl border-b border-neutral-200 p-4">
+      <div className="sticky top-1 z-20 bg-white/90 backdrop-blur-xl border-b border-neutral-200 p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           <h2 className="text-2xl font-heading font-bold text-neutral-900">
             Order List
