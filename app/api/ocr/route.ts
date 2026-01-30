@@ -225,7 +225,7 @@ export async function POST(request: NextRequest) {
       cleanContent = cleanContent.trim();
 
       parsedData = JSON.parse(cleanContent);
-    } catch (parseError) {
+    } catch {
       console.error("Failed to parse GPT response:", content);
       return NextResponse.json(
         {
