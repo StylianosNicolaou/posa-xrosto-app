@@ -1,21 +1,20 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Utensils } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ItemFormProps {
-  currentItem: { name: string; price: string }
-  setCurrentItem: (item: { name: string; price: string }) => void
-  names: string[]
-  selectedParticipants: string[]
-  toggleParticipant: (name: string) => void
-  isValid: boolean
-  onAddItem: () => void
+  currentItem: { name: string; price: string };
+  setCurrentItem: (item: { name: string; price: string }) => void;
+  names: string[];
+  selectedParticipants: string[];
+  toggleParticipant: (name: string) => void;
+  isValid: boolean;
+  onAddItem: () => void;
 }
 
 export function ItemForm({
@@ -28,90 +27,84 @@ export function ItemForm({
   onAddItem,
 }: ItemFormProps) {
   return (
-    <Card className="bg-white border border-gray-300 shadow-xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3 text-gray-900">
-          <div className="w-12 h-12 bg-gray-800 rounded-lg flex items-center justify-center shadow-md">
-            <Utensils className="w-6 h-6 text-white" />
-          </div>
-          <span className="text-xl font-bold">Step 3: Add Items</span>
-        </CardTitle>
-        <CardDescription className="text-gray-600">Add dishes and select who shared each item</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="itemName" className="text-gray-700 font-semibold text-sm">
-              Item Name
-            </Label>
+    <div className="space-y-8">
+      {/* Inputs */}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-zinc-500 uppercase tracking-wider pl-1">
+            What is it?
+          </Label>
+          <Input
+            value={currentItem.name}
+            onChange={(e) =>
+              setCurrentItem({ ...currentItem, name: e.target.value })
+            }
+            placeholder="e.g. Truffle Fries"
+            className="h-16 rounded-2xl bg-zinc-50/50 border-transparent text-xl font-medium focus:bg-white focus:border-zinc-200 transition-all"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-zinc-500 uppercase tracking-wider pl-1">
+            How much?
+          </Label>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-zinc-400">
+              $
+            </span>
             <Input
-              id="itemName"
-              value={currentItem.name}
-              onChange={(e) => setCurrentItem({ ...currentItem, name: e.target.value })}
-              placeholder="e.g., Caesar Salad"
-              className="border-gray-300 focus:border-gray-500 focus:ring-gray-500"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="itemPrice" className="text-gray-700 font-semibold text-sm">
-              Price ($)
-            </Label>
-            <Input
-              id="itemPrice"
               type="number"
               step="0.01"
               min="0"
               value={currentItem.price}
-              onChange={(e) => setCurrentItem({ ...currentItem, price: e.target.value })}
+              onChange={(e) =>
+                setCurrentItem({ ...currentItem, price: e.target.value })
+              }
               placeholder="0.00"
-              className="border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+              className="h-16 pl-10 rounded-2xl bg-zinc-50/50 border-transparent text-3xl font-heading font-bold focus:bg-white focus:border-zinc-200 transition-all"
             />
           </div>
         </div>
+      </div>
 
-        <div className="space-y-3">
-          <Label className="text-gray-700 font-semibold text-sm">Who shared this item?</Label>
-          <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 border border-gray-200">
-            {names.map((name) => (
-              <div
+      {/* Participants */}
+      <div className="space-y-4">
+        <Label className="text-sm font-medium text-zinc-500 uppercase tracking-wider pl-1">
+          Who shared it?
+        </Label>
+        <div className="flex flex-wrap gap-3">
+          {names.map((name) => {
+            const isSelected = selectedParticipants.includes(name);
+            return (
+              <motion.button
                 key={name}
-                className="flex items-center space-x-2 p-3 bg-white hover:bg-gray-50 transition-colors border border-gray-200"
+                whileTap={{ scale: 0.95 }}
+                onClick={() => toggleParticipant(name)}
+                className={`
+                  px-5 py-3 rounded-xl font-medium text-sm transition-all duration-200 border
+                  ${
+                    isSelected
+                      ? "bg-black text-white border-black shadow-lg shadow-black/20"
+                      : "bg-white border-zinc-200 text-black hover:border-zinc-400"
+                  }
+                `}
               >
-                <Checkbox
-                  id={`participant-${name}`}
-                  checked={selectedParticipants.includes(name)}
-                  onCheckedChange={() => toggleParticipant(name)}
-                  className="border-gray-400 data-[state=checked]:bg-gray-800 data-[state=checked]:border-gray-800"
-                />
-                <Label htmlFor={`participant-${name}`} className="text-sm text-gray-700 font-medium cursor-pointer">
-                  {name}
-                </Label>
-              </div>
-            ))}
-          </div>
-          {selectedParticipants.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm text-gray-600 font-medium">Selected participants:</p>
-              <div className="flex flex-wrap gap-2">
-                {selectedParticipants.map((name) => (
-                  <Badge key={name} className="bg-gray-800 text-white hover:bg-gray-700 px-3 py-1 font-medium">
-                    {name}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
+                {name}
+              </motion.button>
+            );
+          })}
         </div>
+      </div>
 
-        <Button
-          onClick={onAddItem}
-          disabled={!isValid}
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6 text-lg disabled:opacity-50 disabled:bg-gray-300 shadow-md font-semibold"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Add Item
-        </Button>
-      </CardContent>
-    </Card>
-  )
+      {/* Add Button */}
+      <Button
+        onClick={onAddItem}
+        disabled={!isValid}
+        className="w-full h-20 rounded-[2rem] bg-black hover:bg-zinc-800 text-white text-xl font-heading font-bold shadow-xl shadow-black/20 disabled:opacity-50 disabled:shadow-none transition-all mt-8"
+      >
+        <Plus className="w-6 h-6 mr-2" />
+        Add to Order
+      </Button>
+    </div>
+  );
 }

@@ -2,20 +2,22 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calculator, RotateCcw, ArrowLeft, Trophy, Share2, FileText, List, ChevronDown } from "lucide-react";
+import {
+  RotateCcw,
+  ArrowLeft,
+  Share2,
+  FileText,
+  List,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 import type { PersonTotal } from "@/types";
+import { motion } from "framer-motion";
 
 interface ResultsStepProps {
   results: PersonTotal[];
@@ -52,8 +54,12 @@ export function ResultsStep({
   };
 
   const handleShare = async (type: "simple" | "full") => {
-    const shareText = type === "simple" ? generateSimpleBill() : generateFullBill();
-    const title = type === "simple" ? "Simple Bill Split Result:" : "Full Bill Split Result:";
+    const shareText =
+      type === "simple" ? generateSimpleBill() : generateFullBill();
+    const title =
+      type === "simple"
+        ? "Simple Bill Split Result:"
+        : "Full Bill Split Result:";
 
     if (navigator.share) {
       try {
@@ -71,112 +77,129 @@ export function ResultsStep({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Card className="bg-white border border-gray-300 shadow-xl">
-          <CardHeader className="text-center space-y-5 pb-8">
-            <div className="mx-auto w-20 h-20 bg-gray-800 rounded-lg flex items-center justify-center shadow-md">
-              <Trophy className="w-10 h-10 text-white" />
+    <div className="min-h-screen flex flex-col p-6 relative z-10 pb-24">
+      <div className="max-w-4xl mx-auto w-full space-y-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-2 pt-4"
+        >
+          <div className="inline-flex items-center justify-center p-3 bg-zinc-100 rounded-full mb-2">
+            <Check className="w-6 h-6 text-black" />
+          </div>
+          <h2 className="text-4xl font-heading font-bold text-black">
+            All Settled!
+          </h2>
+          <p className="text-zinc-500 text-lg">Here is the breakdown</p>
+        </motion.div>
+
+        {/* Total Card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-black text-white p-8 rounded-[2.5rem] shadow-2xl shadow-black/30 text-center relative overflow-hidden"
+        >
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+          <div className="relative z-10">
+            <p className="text-zinc-400 font-medium uppercase tracking-widest mb-2">
+              Total Bill
+            </p>
+            <h3 className="text-6xl md:text-7xl font-heading font-bold tracking-tight">
+              ${totalAmount.toFixed(2)}
+            </h3>
+            <div className="mt-4 inline-block px-4 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-sm font-medium">
+              Split among {namesCount} people
             </div>
-            <div>
-              <CardTitle className="text-3xl font-bold text-gray-900 flex items-center justify-center gap-3 mb-2">
-                <Calculator className="w-7 h-7" />
-                Bill Split Results
-              </CardTitle>
-              <CardDescription className="text-base text-gray-600">
-                Here&apos;s how much each person owes
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-center mb-8 p-6 bg-gray-900 text-white border border-gray-800 shadow-md">
-              <div className="text-4xl font-bold mb-2">
-                Total: ${totalAmount.toFixed(2)}
+          </div>
+        </motion.div>
+
+        {/* Bento Grid Results */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {results.map((person, index) => (
+            <motion.div
+              key={person.name}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.05 }}
+              className="group bg-white/40 backdrop-blur-md border border-black/5 p-6 rounded-[2rem] hover:bg-white/60 transition-all duration-300"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-xl font-bold text-black">{person.name}</h3>
+                <div className="text-2xl font-heading font-bold text-zinc-600">
+                  ${person.total.toFixed(2)}
+                </div>
               </div>
-              <div className="text-base text-gray-200">
-                Split among {namesCount} people
+
+              <div className="space-y-2">
+                {person.items.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex justify-between text-sm text-zinc-500 group-hover:text-zinc-700 transition-colors"
+                  >
+                    <span>{item.name}</span>
+                    <span className="font-medium">
+                      ${item.share.toFixed(2)}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </div>
+            </motion.div>
+          ))}
+        </div>
 
-            <div className="grid gap-5 md:grid-cols-2">
-              {results.map((person) => (
-                <Card
-                  key={person.name}
-                  className="border-l-4 border-l-gray-800 bg-white border border-gray-300 shadow-md hover:shadow-lg transition-shadow"
-                >
-                  <CardContent className="pt-6">
-                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200">
-                      <h3 className="text-xl font-bold text-gray-900">
-                        {person.name}
-                      </h3>
-                      <div className="text-3xl font-bold text-gray-900">
-                        ${person.total.toFixed(2)}
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      {person.items.map((item, itemIndex) => (
-                        <div
-                          key={itemIndex}
-                          className="flex justify-between text-sm p-3 bg-gray-50 border border-gray-200"
-                        >
-                          <span className="text-gray-700 font-medium">{item.name}</span>
-                          <span className="font-semibold text-gray-900">
-                            ${item.share.toFixed(2)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+        {/* Actions */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="flex flex-col sm:flex-row gap-4 pt-4"
+        >
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="h-16 rounded-2xl border border-black/5 hover:bg-zinc-100 text-black bg-white/40 backdrop-blur-md"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Back
+          </Button>
 
-            <div className="flex flex-col sm:flex-row gap-3 mt-8">
-              <Button
-                variant="outline"
-                onClick={onBack}
-                className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Items
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="flex-1 h-16 rounded-2xl bg-black hover:bg-zinc-800 text-white text-lg font-bold shadow-xl shadow-black/20">
+                <Share2 className="w-5 h-5 mr-2" />
+                Share
+                <ChevronDown className="w-5 h-5 ml-2 opacity-50" />
               </Button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button className="flex-1 bg-gray-900 hover:bg-gray-800 text-white shadow-md">
-                    <Share2 className="w-4 h-4 mr-2" />
-                    Share Results
-                    <ChevronDown className="w-4 h-4 ml-2" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="center" className="w-48 bg-white border border-gray-300">
-                  <DropdownMenuItem 
-                    onClick={() => handleShare("full")}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <List className="w-4 h-4 mr-2" />
-                    Full Bill
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleShare("simple")}
-                    className="cursor-pointer hover:bg-gray-50"
-                  >
-                    <FileText className="w-4 h-4 mr-2" />
-                    Simple Bill
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
-              <Button
-                onClick={onReset}
-                className="flex-1 bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 shadow-sm"
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-56 rounded-xl p-2">
+              <DropdownMenuItem
+                onClick={() => handleShare("full")}
+                className="cursor-pointer py-3 rounded-lg focus:bg-zinc-100 focus:text-black"
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Start Over
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+                <List className="w-4 h-4 mr-2" />
+                Full Breakdown
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => handleShare("simple")}
+                className="cursor-pointer py-3 rounded-lg focus:bg-zinc-100 focus:text-black"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Totals Only
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Button
+            variant="destructive"
+            onClick={onReset}
+            className="h-16 rounded-2xl bg-red-500 hover:bg-red-600 text-white shadow-xl shadow-red-500/20"
+          >
+            <RotateCcw className="w-5 h-5 mr-2" />
+            Reset
+          </Button>
+        </motion.div>
       </div>
     </div>
   );

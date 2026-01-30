@@ -1,4 +1,5 @@
-import type { Config } from "tailwindcss"
+import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 const config: Config = {
   darkMode: ["class"],
@@ -7,9 +8,7 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "*.{js,ts,jsx,tsx,mdx}",
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -19,69 +18,12 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        heading: ["var(--font-heading)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...fontFamily.sans],
+        mono: ["var(--font-mono)", ...fontFamily.mono],
+      },
       colors: {
-        // Custom color palette - minimal approach
-        amaranth: {
-          50: "#fdf2f5",
-          100: "#fce7ed",
-          200: "#f9d0dc",
-          300: "#f4a8c0",
-          400: "#ed7ba0",
-          500: "#e08dac", // Main color
-          600: "#d16b94",
-          700: "#b8527a",
-          800: "#984465",
-          900: "#7d3a56",
-        },
-        glaucous: {
-          50: "#f0f2fe",
-          100: "#e4e8fc",
-          200: "#cdd4f9",
-          300: "#aab8f4",
-          400: "#8396ed",
-          500: "#6a7fdb", // Main color
-          600: "#5562ca",
-          700: "#4750b0",
-          800: "#3d4390",
-          900: "#363c74",
-        },
-        cyan: {
-          50: "#f0fefe",
-          100: "#ccfbfc",
-          200: "#9ff6f8",
-          300: "#66ecf0",
-          400: "#57e2e5", // Main color
-          500: "#2dd4d7",
-          600: "#26a8b5",
-          700: "#268692",
-          800: "#286c76",
-          900: "#255a63",
-        },
-        eerie: {
-          50: "#f6f6f6",
-          100: "#e7e7e7",
-          200: "#d1d1d1",
-          300: "#b0b0b0",
-          400: "#888888",
-          500: "#6d6d6d",
-          600: "#5d5d5d",
-          700: "#4f4f4f",
-          800: "#454545",
-          900: "#3d3d3d",
-          950: "#1f1e1f", // Main color
-        },
-        vanilla: {
-          50: "#fefcf3",
-          100: "#fef8e1",
-          200: "#fdefc2",
-          300: "#fbe298",
-          400: "#e8da9b", // Main color
-          500: "#f5c842",
-          600: "#e5a635",
-          700: "#c0842e",
-          800: "#9c682a",
-          900: "#7f5627",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -130,14 +72,29 @@ const config: Config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-20px)" },
+        },
+        "pulse-slow": {
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.8" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        float: "float 6s ease-in-out infinite",
+        "pulse-slow": "pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+};
 
-export default config
+export default config;
