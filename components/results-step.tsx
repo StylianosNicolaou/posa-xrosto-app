@@ -21,6 +21,7 @@ import {
 import type { PersonTotal } from "@/types";
 import { motion } from "framer-motion";
 import { getNameStyle } from "@/lib/easter-egg";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface ResultsStepProps {
   results: PersonTotal[];
@@ -28,6 +29,7 @@ interface ResultsStepProps {
   namesCount: number;
   onBack: () => void;
   onReset: () => void;
+  currency: Currency;
 }
 
 export function ResultsStep({
@@ -36,10 +38,11 @@ export function ResultsStep({
   namesCount,
   onBack,
   onReset,
+  currency,
 }: ResultsStepProps) {
   const generateSimpleBill = () => {
-    return `\nTotal: $${totalAmount.toFixed(2)}\n\n${results
-      .map((person) => `${person.name}: $${person.total.toFixed(2)}`)
+    return `\nTotal: ${formatCurrency(totalAmount, currency)}\n\n${results
+      .map((person) => `${person.name}: ${formatCurrency(person.total, currency)}`)
       .join("\n")}\n\nSplit with Posa Xrosto!`;
   };
 
@@ -47,13 +50,13 @@ export function ResultsStep({
     const personDetails = results
       .map((person) => {
         const itemsList = person.items
-          .map((item) => `  • ${item.name}: $${item.share.toFixed(2)}`)
+          .map((item) => `  • ${item.name}: ${formatCurrency(item.share, currency)}`)
           .join("\n");
-        return `${person.name}: $${person.total.toFixed(2)}\n${itemsList}`;
+        return `${person.name}: ${formatCurrency(person.total, currency)}\n${itemsList}`;
       })
       .join("\n\n");
 
-    return `\nTotal: $${totalAmount.toFixed(2)}\n\n${personDetails}\n\nSplit with Posa Xrosto!`;
+    return `\nTotal: ${formatCurrency(totalAmount, currency)}\n\n${personDetails}\n\nSplit with Posa Xrosto!`;
   };
 
   const handleShare = async (type: "simple" | "full") => {
@@ -118,6 +121,7 @@ export function ResultsStep({
             <AnimatedNumber
               value={totalAmount}
               className="text-6xl md:text-7xl font-heading font-bold tracking-tight"
+              currency={currency}
             />
             <div className="mt-4 inline-block px-4 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/10 text-sm font-medium">
               Split among {namesCount} people
@@ -142,6 +146,7 @@ export function ResultsStep({
                 <AnimatedNumber
                   value={person.total}
                   className="text-2xl font-heading font-bold text-brand-primary"
+                  currency={currency}
                 />
               </div>
 
@@ -156,7 +161,7 @@ export function ResultsStep({
                   >
                     <span>{item.name}</span>
                     <span className="font-medium">
-                      ${item.share.toFixed(2)}
+                      {formatCurrency(item.share, currency)}
                     </span>
                   </motion.div>
                 ))}

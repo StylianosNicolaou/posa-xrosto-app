@@ -5,9 +5,11 @@ import { ItemForm } from "./item-form";
 import { ItemsList } from "./items-list";
 import { ReceiptScanner } from "./receipt-scanner";
 import { ProgressBar } from "@/components/progress-bar";
+import { CurrencySelector } from "@/components/currency-selector";
 import { Button } from "@/components/ui/button";
 import { Camera, Plus } from "lucide-react";
 import type { Item } from "@/types";
+import type { Currency } from "@/lib/currency";
 import { motion } from "framer-motion";
 import {
   Sheet,
@@ -32,6 +34,8 @@ interface ItemsManagementStepProps {
   onToggleItemParticipant: (itemId: string, participantName: string) => void;
   onCalculate: () => void;
   onBack: () => void;
+  currency: Currency;
+  onCurrencyChange: (currency: Currency) => void;
 }
 
 export function ItemsManagementStep({
@@ -49,14 +53,20 @@ export function ItemsManagementStep({
   onToggleItemParticipant,
   onCalculate,
   onBack,
+  currency,
+  onCurrencyChange,
 }: ItemsManagementStepProps) {
   const [showScanner, setShowScanner] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const handleScannedItems = (
     scannedItems: { name: string; price: number }[],
+    detectedCurrency?: Currency,
   ) => {
     onAddMultipleItems(scannedItems);
+    if (detectedCurrency) {
+      onCurrencyChange(detectedCurrency);
+    }
     setShowScanner(false);
   };
 
@@ -89,13 +99,16 @@ export function ItemsManagementStep({
           <h2 className="text-2xl font-heading font-bold text-neutral-900">
             Order List
           </h2>
-          <Button
-            onClick={() => setShowScanner(true)}
-            className="rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border-0 font-medium px-6"
-          >
-            <Camera className="w-4 h-4 mr-2" />
-            Scan Receipt
-          </Button>
+          <div className="flex items-center gap-3">
+            <CurrencySelector currency={currency} onCurrencyChange={onCurrencyChange} />
+            <Button
+              onClick={() => setShowScanner(true)}
+              className="rounded-full bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border-0 font-medium px-6"
+            >
+              <Camera className="w-4 h-4 mr-2" />
+              Scan Receipt
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -108,6 +121,7 @@ export function ItemsManagementStep({
           onToggleItemParticipant={onToggleItemParticipant}
           onCalculate={onCalculate}
           onBack={onBack}
+          currency={currency}
         />
       </div>
 
@@ -147,6 +161,7 @@ export function ItemsManagementStep({
                 toggleParticipant={toggleParticipant}
                 isValid={isValidItem}
                 onAddItem={handleManualAdd}
+                currency={currency}
               />
             </div>
           </SheetContent>

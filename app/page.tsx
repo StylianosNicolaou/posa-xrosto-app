@@ -19,11 +19,13 @@ export default function PosaXrosto() {
     selectedParticipants,
     results,
     totalAmount,
+    currency,
     // Setters
     setStep,
     setNumberOfPeople,
     setCurrentNames,
     setCurrentItem,
+    setCurrency,
     // Validation
     isValidNumberOfPeople,
     isValidNames,
@@ -89,6 +91,8 @@ export default function PosaXrosto() {
         onToggleItemParticipant={handleToggleItemParticipant}
         onCalculate={handleCalculate}
         onBack={() => setStep(2)}
+        currency={currency}
+        onCurrencyChange={setCurrency}
       />
     );
   }
@@ -102,6 +106,7 @@ export default function PosaXrosto() {
         namesCount={names.length}
         onBack={() => setStep(3)}
         onReset={handleReset}
+        currency={currency}
       />
     );
   }

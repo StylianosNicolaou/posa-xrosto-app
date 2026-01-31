@@ -3,6 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useReceiptScanner } from "@/hooks/use-receipt-scanner";
+import { detectCurrency, formatCurrency, DEFAULT_CURRENCY, type Currency } from "@/lib/currency";
 import {
   Camera,
   X,
@@ -14,7 +15,7 @@ import {
 } from "lucide-react";
 
 interface ReceiptScannerProps {
-  onItemsScanned: (items: { name: string; price: number }[]) => void;
+  onItemsScanned: (items: { name: string; price: number }[], detectedCurrency?: Currency) => void;
   onClose: () => void;
 }
 
@@ -24,7 +25,7 @@ export function ReceiptScanner({
   onItemsScanned,
   onClose,
 }: ReceiptScannerProps) {
-  const { status, scannedItems, error, processReceipt, reset } =
+  const { status, scannedItems, detectedCurrency, error, processReceipt, reset } =
     useReceiptScanner();
 
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -283,7 +284,7 @@ export function ReceiptScanner({
   };
 
   const handleAddItems = () => {
-    onItemsScanned(scannedItems);
+    onItemsScanned(scannedItems, detectedCurrency || undefined);
     handleClose();
   };
 
@@ -400,6 +401,7 @@ export function ReceiptScanner({
       (sum, item) => sum + (item.quantity || 1),
       0,
     );
+    const currency = detectedCurrency || DEFAULT_CURRENCY;
 
     return (
       <div className="min-h-screen bg-neutral-50 flex flex-col p-6">
@@ -414,8 +416,7 @@ export function ReceiptScanner({
               Receipt Scanned!
             </h2>
             <p className="text-neutral-500">
-              Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: $
-              {totalAmount.toFixed(2)}
+              Found {totalItems} item{totalItems !== 1 ? "s" : ""} • Total: {formatCurrency(totalAmount, currency)}
             </p>
           </div>
 
@@ -437,12 +438,12 @@ export function ReceiptScanner({
                   </span>
                   {item.quantity > 1 && (
                     <p className="text-xs text-neutral-500 mt-0.5">
-                      ${(item.price / item.quantity).toFixed(2)} each
+                      {formatCurrency(item.price / item.quantity, currency)} each
                     </p>
                   )}
                 </div>
                 <span className="text-sm font-semibold text-white bg-brand-primary px-3 py-1 rounded-full">
-                  ${item.price.toFixed(2)}
+                  {formatCurrency(item.price, currency)}
                 </span>
               </div>
             ))}

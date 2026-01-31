@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 import { getNameStyle } from "@/lib/easter-egg";
+import { getCurrencySymbol, type Currency } from "@/lib/currency";
 
 interface ItemFormProps {
   currentItem: { name: string; price: string };
@@ -15,6 +16,7 @@ interface ItemFormProps {
   toggleParticipant: (name: string) => void;
   isValid: boolean;
   onAddItem: () => void;
+  currency: Currency;
 }
 
 export function ItemForm({
@@ -25,6 +27,7 @@ export function ItemForm({
   toggleParticipant,
   isValid,
   onAddItem,
+  currency,
 }: ItemFormProps) {
   return (
     <div className="space-y-8">
@@ -50,7 +53,7 @@ export function ItemForm({
           </Label>
           <div className="relative">
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-neutral-400">
-              $
+              {getCurrencySymbol(currency)}
             </span>
             <Input
               type="number"

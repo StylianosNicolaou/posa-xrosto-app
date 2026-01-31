@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion, useSpring } from "framer-motion";
+import { formatCurrency, type Currency, DEFAULT_CURRENCY } from "@/lib/currency";
 
 interface AnimatedNumberProps {
   value: number;
   className?: string;
-  prefix?: string;
+  currency?: Currency;
   decimals?: number;
   delay?: number;
 }
@@ -14,7 +15,7 @@ interface AnimatedNumberProps {
 export function AnimatedNumber({
   value,
   className = "",
-  prefix = "$",
+  currency = DEFAULT_CURRENCY,
   decimals = 2,
   delay = 400,
 }: AnimatedNumberProps) {
@@ -23,8 +24,8 @@ export function AnimatedNumber({
     damping: 20,
   });
 
-  // Start at $0.00 so the count-up is visible
-  const [displayValue, setDisplayValue] = useState(`${prefix}${(0).toFixed(decimals)}`);
+  // Start at 0 so the count-up is visible
+  const [displayValue, setDisplayValue] = useState(formatCurrency(0, currency));
 
   useEffect(() => {
     // Delay the animation start so it happens after screen transition
@@ -37,9 +38,9 @@ export function AnimatedNumber({
 
   useEffect(() => {
     return spring.on("change", (latest) => {
-      setDisplayValue(`${prefix}${latest.toFixed(decimals)}`);
+      setDisplayValue(formatCurrency(latest, currency));
     });
-  }, [spring, prefix, decimals]);
+  }, [spring, currency]);
 
   return (
     <motion.span className={className}>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Item, PersonTotal } from "@/types";
+import { DEFAULT_CURRENCY, type Currency } from "@/lib/currency";
 
 export function useBillSplit() {
   const [step, setStep] = useState(0);
@@ -14,6 +15,7 @@ export function useBillSplit() {
     []
   );
   const [results, setResults] = useState<PersonTotal[]>([]);
+  const [currency, setCurrency] = useState<Currency>(DEFAULT_CURRENCY);
 
   // Validation functions
   const isValidNumberOfPeople = () => {
@@ -135,6 +137,7 @@ export function useBillSplit() {
     setCurrentItem({ name: "", price: "" });
     setSelectedParticipants([]);
     setResults([]);
+    setCurrency(DEFAULT_CURRENCY);
   };
 
   const toggleParticipant = (name: string) => {
@@ -156,11 +159,13 @@ export function useBillSplit() {
     selectedParticipants,
     results,
     totalAmount,
+    currency,
     // Setters
     setStep,
     setNumberOfPeople,
     setCurrentNames,
     setCurrentItem,
+    setCurrency,
     // Validation
     isValidNumberOfPeople,
     isValidNames,

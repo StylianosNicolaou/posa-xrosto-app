@@ -17,6 +17,7 @@ interface ReceiptData {
   total: number;
   restaurant?: string;
   date?: string;
+  currency?: string;
 }
 
 const EXTRACTION_PROMPT = `You are an expert receipt parser with 100% accuracy. Extract ALL purchased items from this receipt image.
@@ -31,6 +32,7 @@ Identify every item that was purchased and return structured data. Be thorough -
 - Drinks (alcoholic and non-alcoholic)
 - Products/merchandise
 - Add-ons, extras, modifications that have a price
+- Currency used (EUR, USD, GBP, JPY, CHF, CAD, AUD) based on symbols (€, $, £, ¥, CHF) or country
 
 ### NEVER EXTRACT these:
 - Restaurant/store name, logo, slogan
@@ -131,10 +133,11 @@ Return ONLY valid JSON. No markdown. No explanation. No code blocks.
     {"name": "Item Name", "price": 0.00, "quantity": 1}
   ],
   "restaurant": "Name if visible, otherwise null",
-  "date": "Date if visible in any format, otherwise null"
+  "date": "Date if visible in any format, otherwise null",
+  "currency": "EUR|USD|GBP|JPY|CHF|CAD|AUD based on symbols or context, default EUR if unclear"
 }
 
-If you cannot find ANY items: {"items":[],"error":"No menu items found - image may be unclear or not a receipt"}`;
+If you cannot find ANY items: {"items":[],"error":"No menu items found - image may be unclear or not a receipt","currency":"EUR"}`;
 
 export async function POST(request: NextRequest) {
   try {

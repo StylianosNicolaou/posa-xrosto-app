@@ -12,6 +12,7 @@ import {
 import type { Item } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { getNameStyle } from "@/lib/easter-egg";
+import { formatCurrency, type Currency } from "@/lib/currency";
 
 interface ItemsListProps {
   items: Item[];
@@ -21,6 +22,7 @@ interface ItemsListProps {
   onToggleItemParticipant: (itemId: string, participantName: string) => void;
   onCalculate: () => void;
   onBack: () => void;
+  currency: Currency;
 }
 
 export function ItemsList({
@@ -31,6 +33,7 @@ export function ItemsList({
   onToggleItemParticipant,
   onCalculate,
   onBack,
+  currency,
 }: ItemsListProps) {
   if (items.length === 0) {
     return (
@@ -66,6 +69,7 @@ export function ItemsList({
           <AnimatedNumber
             value={totalAmount}
             className="text-4xl font-heading font-bold block"
+            currency={currency}
           />
         </div>
         <div className="text-right relative z-10">
@@ -110,7 +114,7 @@ export function ItemsList({
                       {item.name}
                     </h3>
                     <p className="text-2xl font-heading font-bold text-neutral-500 mt-1">
-                      ${item.price.toFixed(2)}
+                      {formatCurrency(item.price, currency)}
                     </p>
                   </div>
                   <Button
@@ -157,7 +161,7 @@ export function ItemsList({
                     animate={{ opacity: 1 }}
                     className="mt-3 text-xs text-neutral-500"
                   >
-                    ${(item.price / item.participants.length).toFixed(2)} per person
+                    {formatCurrency(item.price / item.participants.length, currency)} per person
                   </motion.p>
                 )}
 

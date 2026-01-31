@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { detectCurrency, type Currency } from "@/lib/currency";
 
 interface ScannedItem {
   name: string;
@@ -13,11 +14,13 @@ type ScannerStatus = "idle" | "processing" | "success" | "error";
 export function useReceiptScanner() {
   const [status, setStatus] = useState<ScannerStatus>("idle");
   const [scannedItems, setScannedItems] = useState<ScannedItem[]>([]);
+  const [detectedCurrency, setDetectedCurrency] = useState<Currency | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const reset = useCallback(() => {
     setStatus("idle");
     setScannedItems([]);
+    setDetectedCurrency(null);
     setError(null);
   }, []);
 
@@ -56,21 +59,29 @@ export function useReceiptScanner() {
         throw new Error("No items found in the receipt");
       }
 
+      // Detect currency from the API response or fall back to detecting from text
+      let currency: Currency | null = null;
+      if (result.data.currency) {
+        currency = result.data.currency as Currency;
+      }
+      
       setScannedItems(items);
+      setDetectedCurrency(currency);
       setStatus("success");
-      return items;
+      return { items, currency };
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to process receipt";
       setError(errorMessage);
       setStatus("error");
-      return [];
+      return { items: [], currency: null };
     }
   }, []);
 
   return {
     status,
     scannedItems,
+    detectedCurrency,
     error,
     processReceipt,
     reset,
