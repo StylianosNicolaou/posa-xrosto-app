@@ -80,13 +80,10 @@ export function NamesEntryStep({
     const usedCombos = new Set<string>();
     const randomNames: string[] = [];
 
-    // 50% chance to include the easter egg "Green Colibri"
-    const includeEasterEgg = Math.random() < 0.5 && count > 0;
-    if (includeEasterEgg) {
-      randomNames.push(EASTER_EGG_NAME);
-      usedCombos.add(EASTER_EGG_NAME);
-    }
+    // 15% chance to include the easter egg "Green Colibri"
+    const includeEasterEgg = Math.random() < 0.15 && count > 0;
 
+    // Generate all names first (without the easter egg)
     while (randomNames.length < count) {
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
       const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
@@ -101,6 +98,12 @@ export function NamesEntryStep({
         usedCombos.add(combo);
         randomNames.push(combo);
       }
+    }
+
+    // If we should include the easter egg, replace a random name with it
+    if (includeEasterEgg) {
+      const randomIndex = Math.floor(Math.random() * count);
+      randomNames[randomIndex] = EASTER_EGG_NAME;
     }
 
     setCurrentNames(randomNames);
