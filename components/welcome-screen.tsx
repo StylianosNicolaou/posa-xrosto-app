@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Utensils, Download, ArrowRight } from "lucide-react";
+import { Download, ArrowRight } from "lucide-react";
 import { usePWAInstall } from "@/hooks/use-pwa-install";
 import { motion } from "framer-motion";
 
@@ -22,10 +22,6 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="space-y-6"
         >
-          <div className="inline-flex items-center justify-center p-3 bg-white backdrop-blur-md border border-neutral-200 rounded-2xl shadow-sm mb-4">
-            <Utensils className="w-6 h-6 text-brand-primary" />
-          </div>
-
           <h1 className="text-6xl md:text-8xl font-heading font-bold tracking-tighter text-neutral-900 leading-[0.9]">
             POSA
             <br />
