@@ -7,7 +7,7 @@ import { ReceiptScanner } from "./receipt-scanner";
 import { ProgressBar } from "@/components/progress-bar";
 import { CurrencySelector } from "@/components/currency-selector";
 import { Button } from "@/components/ui/button";
-import { Camera, Plus } from "lucide-react";
+import { Camera, Plus, ArrowLeft } from "lucide-react";
 import type { Item } from "@/types";
 import type { Currency } from "@/lib/currency";
 import { motion } from "framer-motion";
@@ -96,9 +96,18 @@ export function ItemsManagementStep({
       {/* Header with Currency */}
       <div className="sticky top-1 z-20 bg-white/90 backdrop-blur-xl border-b border-neutral-200 p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-heading font-bold text-neutral-900">
-            Order List
-          </h2>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              onClick={onBack}
+              className="h-10 w-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0 p-0"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h2 className="text-2xl font-heading font-bold text-neutral-900">
+              Order List
+            </h2>
+          </div>
           <CurrencySelector currency={currency} onCurrencyChange={onCurrencyChange} />
         </div>
       </div>

@@ -229,19 +229,12 @@ export function ItemsList({
         </AnimatePresence>
       </div>
 
-      {/* Bottom Actions */}
-      <div className="flex gap-4 pt-4">
-        <Button
-          variant="ghost"
-          onClick={onBack}
-          className="h-16 w-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </Button>
+      {/* Bottom Action */}
+      <div className="pt-4">
         <Button
           onClick={onCalculate}
           disabled={items.length === 0 || items.some(item => item.participants.length === 0)}
-          className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
+          className="w-full h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-xl font-heading font-bold shadow-xl shadow-brand-primary/25 disabled:opacity-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
         >
           Calculate Split
           <Calculator className="w-6 h-6 ml-2" />

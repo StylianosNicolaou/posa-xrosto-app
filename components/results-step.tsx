@@ -85,12 +85,29 @@ export function ResultsStep({
   return (
     <div className="min-h-screen flex flex-col relative z-10 pb-24 bg-neutral-50">
       <ProgressBar currentStep={4} />
+      
+      {/* Header with Back Button */}
+      <div className="sticky top-1 z-20 bg-white/90 backdrop-blur-xl border-b border-neutral-200 p-4 mb-2">
+        <div className="max-w-4xl mx-auto flex items-center gap-3">
+          <Button
+            variant="ghost"
+            onClick={onBack}
+            className="h-10 w-10 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0 p-0"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </Button>
+          <h2 className="text-2xl font-heading font-bold text-neutral-900">
+            Results
+          </h2>
+        </div>
+      </div>
+
       <div className="max-w-4xl mx-auto w-full space-y-8 p-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-2 pt-4"
+          className="text-center space-y-2"
         >
           <motion.div
             initial={{ scale: 0 }}
@@ -177,15 +194,6 @@ export function ResultsStep({
           transition={{ delay: 0.5 }}
           className="flex flex-col sm:flex-row gap-4 pt-4"
         >
-          <Button
-            variant="ghost"
-            onClick={onBack}
-            className="h-16 rounded-2xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 border-0"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
-          </Button>
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="flex-1 h-16 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white text-lg font-bold shadow-xl shadow-brand-primary/25">
