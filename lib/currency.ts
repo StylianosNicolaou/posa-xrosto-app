@@ -1,4 +1,4 @@
-export type Currency = "EUR" | "USD" | "GBP" | "JPY" | "CHF" | "CAD" | "AUD";
+export type Currency = "EUR" | "USD" | "GBP";
 
 export interface CurrencyInfo {
   code: Currency;
@@ -11,10 +11,6 @@ export const CURRENCIES: Record<Currency, CurrencyInfo> = {
   EUR: { code: "EUR", symbol: "€", name: "Euro", position: "after" },
   USD: { code: "USD", symbol: "$", name: "US Dollar", position: "before" },
   GBP: { code: "GBP", symbol: "£", name: "British Pound", position: "before" },
-  JPY: { code: "JPY", symbol: "¥", name: "Japanese Yen", position: "before" },
-  CHF: { code: "CHF", symbol: "CHF", name: "Swiss Franc", position: "before" },
-  CAD: { code: "CAD", symbol: "C$", name: "Canadian Dollar", position: "before" },
-  AUD: { code: "AUD", symbol: "A$", name: "Australian Dollar", position: "before" },
 };
 
 export const DEFAULT_CURRENCY: Currency = "EUR";
@@ -46,13 +42,9 @@ export function getCurrencySymbol(currency: Currency = DEFAULT_CURRENCY): string
 export function detectCurrency(text: string): Currency {
   const upperText = text.toUpperCase();
   
-  // Check for explicit currency codes
+  // Check for explicit currency codes and symbols
   if (upperText.includes("EUR") || upperText.includes("€")) return "EUR";
   if (upperText.includes("GBP") || upperText.includes("£")) return "GBP";
-  if (upperText.includes("JPY") || upperText.includes("¥") || upperText.includes("YEN")) return "JPY";
-  if (upperText.includes("CHF")) return "CHF";
-  if (upperText.includes("CAD") || upperText.includes("C$")) return "CAD";
-  if (upperText.includes("AUD") || upperText.includes("A$")) return "AUD";
   if (upperText.includes("USD") || upperText.includes("$")) return "USD";
   
   // Default to EUR

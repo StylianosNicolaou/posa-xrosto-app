@@ -32,7 +32,7 @@ Identify every item that was purchased and return structured data. Be thorough -
 - Drinks (alcoholic and non-alcoholic)
 - Products/merchandise
 - Add-ons, extras, modifications that have a price
-- Currency used (EUR, USD, GBP, JPY, CHF, CAD, AUD) based on symbols (€, $, £, ¥, CHF) or country
+- Currency used: EUR (€), USD ($), or GBP (£)
 
 ### NEVER EXTRACT these:
 - Restaurant/store name, logo, slogan
@@ -134,7 +134,7 @@ Return ONLY valid JSON. No markdown. No explanation. No code blocks.
   ],
   "restaurant": "Name if visible, otherwise null",
   "date": "Date if visible in any format, otherwise null",
-  "currency": "EUR|USD|GBP|JPY|CHF|CAD|AUD based on symbols or context, default EUR if unclear"
+  "currency": "EUR|USD|GBP based on symbols (€, $, £) or context, default EUR if unclear"
 }
 
 If you cannot find ANY items: {"items":[],"error":"No menu items found - image may be unclear or not a receipt","currency":"EUR"}`;
