@@ -118,13 +118,6 @@ export function InstallPrompt() {
                         </p>
                       </div>
                     </div>
-                    <Button
-                      onClick={handleDismiss}
-                      variant="ghost"
-                      className="w-full h-10 rounded-xl text-neutral-500 hover:bg-neutral-100 text-sm"
-                    >
-                      Don&apos;t show again
-                    </Button>
                   </div>
                 </motion.div>
               )}
