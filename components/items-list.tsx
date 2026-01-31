@@ -8,6 +8,8 @@ import {
   Trash2,
   AlertCircle,
   Receipt,
+  Camera,
+  Plus,
 } from "lucide-react";
 import type { Item } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,6 +25,8 @@ interface ItemsListProps {
   onCalculate: () => void;
   onBack: () => void;
   currency: Currency;
+  onScanReceipt?: () => void;
+  onAddItem?: () => void;
 }
 
 export function ItemsList({
@@ -34,21 +38,69 @@ export function ItemsList({
   onCalculate,
   onBack,
   currency,
+  onScanReceipt,
+  onAddItem,
 }: ItemsListProps) {
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-[50vh] text-center space-y-4 opacity-60">
-        <div className="w-24 h-24 rounded-full bg-neutral-100 flex items-center justify-center">
-          <Receipt className="w-10 h-10 text-neutral-400" />
+      <div className="flex flex-col gap-6">
+        {/* Empty State */}
+        <div className="flex flex-col items-center justify-center h-[30vh] text-center space-y-4">
+          <div className="w-24 h-24 rounded-full bg-neutral-100 flex items-center justify-center">
+            <Receipt className="w-10 h-10 text-neutral-400" />
+          </div>
+          <p className="text-xl font-heading font-medium text-neutral-900">
+            No items yet
+          </p>
+          <p className="text-neutral-500">
+            Start by scanning a receipt or adding items manually
+          </p>
         </div>
-        <p className="text-xl font-heading font-medium text-neutral-900">
-          No items yet
-        </p>
-        <p className="text-neutral-500">
-          Tap the + button to add items manually
-          <br />
-          or scan a receipt
-        </p>
+
+        {/* Action Buttons */}
+        <div className="grid grid-cols-1 gap-4">
+          {onScanReceipt && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <Button
+                onClick={onScanReceipt}
+                className="w-full h-28 rounded-2xl bg-white border-2 border-neutral-200 hover:border-brand-primary hover:bg-brand-primary/5 text-neutral-900 font-heading shadow-lg hover:shadow-xl transition-all flex flex-col items-center justify-center gap-3 group"
+              >
+                <div className="w-14 h-14 rounded-full bg-brand-primary/10 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
+                  <Camera className="w-7 h-7 text-brand-primary" />
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold">Scan Receipt</div>
+                  <div className="text-sm text-neutral-500 font-normal">Fast & automatic</div>
+                </div>
+              </Button>
+            </motion.div>
+          )}
+
+          {onAddItem && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <Button
+                onClick={onAddItem}
+                className="w-full h-28 rounded-2xl bg-white border-2 border-neutral-200 hover:border-brand-primary hover:bg-brand-primary/5 text-neutral-900 font-heading shadow-lg hover:shadow-xl transition-all flex flex-col items-center justify-center gap-3 group"
+              >
+                <div className="w-14 h-14 rounded-full bg-brand-primary/10 flex items-center justify-center group-hover:bg-brand-primary/20 transition-colors">
+                  <Plus className="w-7 h-7 text-brand-primary" />
+                </div>
+                <div className="text-center">
+                  <div className="text-xl font-bold">Add Items</div>
+                  <div className="text-sm text-neutral-500 font-normal">Manually, one by one</div>
+                </div>
+              </Button>
+            </motion.div>
+          )}
+        </div>
       </div>
     );
   }
