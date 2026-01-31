@@ -51,12 +51,19 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           {isInstallable && !isInstalled && (
             <Button
               onClick={installApp}
-              variant="ghost"
-              className="w-full h-12 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900 rounded-xl"
+              variant="outline"
+              className="w-full h-14 text-neutral-700 bg-white border-2 border-neutral-200 hover:border-brand-primary hover:bg-brand-primary/5 rounded-2xl font-medium transition-all"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-5 h-5 mr-2 text-brand-primary" />
               Install App
             </Button>
+          )}
+
+          {isInstalled && (
+            <p className="text-sm text-success font-medium flex items-center justify-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-success"></span>
+              App installed
+            </p>
           )}
         </motion.div>
       </div>
