@@ -100,6 +100,12 @@ export function useBillSplit() {
     setItems(items.filter((item) => item.id !== id));
   };
 
+  const handleEditItem = (id: string, name: string, price: number) => {
+    setItems(items.map((item) => 
+      item.id === id ? { ...item, name, price } : item
+    ));
+  };
+
   const handleCalculate = () => {
     const personTotals: PersonTotal[] = names.map((name) => ({
       name,
@@ -176,6 +182,7 @@ export function useBillSplit() {
     handleAddItem,
     handleAddMultipleItems,
     handleRemoveItem,
+    handleEditItem,
     handleToggleItemParticipant,
     handleCalculate,
     handleReset,

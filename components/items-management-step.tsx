@@ -31,6 +31,7 @@ interface ItemsManagementStepProps {
   onAddItem: () => void;
   onAddMultipleItems: (items: { name: string; price: number }[]) => void;
   onRemoveItem: (id: string) => void;
+  onEditItem: (id: string, name: string, price: number) => void;
   onToggleItemParticipant: (itemId: string, participantName: string) => void;
   onCalculate: () => void;
   onBack: () => void;
@@ -50,6 +51,7 @@ export function ItemsManagementStep({
   onAddItem,
   onAddMultipleItems,
   onRemoveItem,
+  onEditItem,
   onToggleItemParticipant,
   onCalculate,
   onBack,
@@ -109,6 +111,7 @@ export function ItemsManagementStep({
           names={names}
           totalAmount={totalAmount}
           onRemoveItem={onRemoveItem}
+          onEditItem={onEditItem}
           onToggleItemParticipant={onToggleItemParticipant}
           onCalculate={onCalculate}
           onBack={onBack}

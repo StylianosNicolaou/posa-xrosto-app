@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { AnimatedNumber } from "@/components/animated-number";
 import {
   Calculator,
@@ -11,6 +13,9 @@ import {
   Receipt,
   Camera,
   Plus,
+  Pencil,
+  Check,
+  X,
 } from "lucide-react";
 import type { Item } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,6 +27,7 @@ interface ItemsListProps {
   names: string[];
   totalAmount: number;
   onRemoveItem: (id: string) => void;
+  onEditItem: (id: string, name: string, price: number) => void;
   onToggleItemParticipant: (itemId: string, participantName: string) => void;
   onCalculate: () => void;
   onBack: () => void;
@@ -35,6 +41,7 @@ export function ItemsList({
   names,
   totalAmount,
   onRemoveItem,
+  onEditItem,
   onToggleItemParticipant,
   onCalculate,
   onBack,
@@ -42,6 +49,30 @@ export function ItemsList({
   onScanReceipt,
   onAddItem,
 }: ItemsListProps) {
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+
+  const startEditing = (item: Item) => {
+    setEditingId(item.id);
+    setEditName(item.name);
+    setEditPrice(item.price.toString());
+  };
+
+  const saveEdit = () => {
+    if (editingId && editName.trim() && Number.parseFloat(editPrice) > 0) {
+      onEditItem(editingId, editName.trim(), Number.parseFloat(editPrice));
+      setEditingId(null);
+      setEditName("");
+      setEditPrice("");
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditPrice("");
+  };
   if (items.length === 0) {
     return (
       <div className="flex flex-col gap-6">
@@ -131,6 +162,29 @@ export function ItemsList({
 
   return (
     <div className="space-y-6 pb-24">
+      {/* Action Buttons at Top */}
+      <div className="flex gap-3">
+        {onScanReceipt && (
+          <Button
+            onClick={onScanReceipt}
+            variant="outline"
+            className="flex-1 h-14 rounded-2xl bg-white border-2 border-neutral-200 hover:border-brand-primary hover:bg-brand-primary/5 text-neutral-700 font-medium transition-all flex items-center justify-center gap-2"
+          >
+            <Camera className="w-5 h-5 text-brand-primary" />
+            Scan Receipt
+          </Button>
+        )}
+        {onAddItem && (
+          <Button
+            onClick={onAddItem}
+            className="flex-1 h-14 rounded-2xl bg-brand-primary hover:bg-brand-primary-hover text-white font-medium shadow-lg shadow-brand-primary/25 transition-all flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            Add Item
+          </Button>
+        )}
+      </div>
+
       {/* Total Header */}
       <motion.div
         initial={{ opacity: 0, y: -10 }}
@@ -168,6 +222,8 @@ export function ItemsList({
         <AnimatePresence mode="popLayout">
           {items.map((item, index) => {
             const hasParticipants = item.participants.length > 0;
+            const isEditing = editingId === item.id;
+            
             return (
               <motion.div
                 key={item.id}
@@ -184,68 +240,121 @@ export function ItemsList({
                   }
                 `}
               >
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="text-lg font-bold text-neutral-900 leading-tight">
-                      {item.name}
-                    </h3>
-                    <p className="text-2xl font-heading font-bold text-neutral-500 mt-1">
-                      {formatCurrency(item.price, currency)}
-                    </p>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onRemoveItem(item.id)}
-                    className="text-neutral-300 hover:text-danger hover:bg-danger/10 rounded-xl -mr-2 -mt-2"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </Button>
-                </div>
-
-                {/* Participants Chips */}
-                <div className="flex flex-wrap gap-2">
-                  {names.map((name) => {
-                    const isSelected = item.participants.includes(name);
-                    const nameStyle = getNameStyle(name);
-                    return (
-                      <motion.button
-                        key={name}
-                        whileTap={{ scale: 0.92 }}
-                        onClick={() => onToggleItemParticipant(item.id, name)}
-                        className={`
-                          text-xs font-medium px-3 py-1.5 rounded-lg transition-colors
-                          ${
-                            isSelected
-                              ? "bg-brand-primary text-white border border-brand-primary"
-                              : "bg-transparent border border-neutral-200 text-neutral-500 hover:border-brand-primary/40 hover:text-neutral-700"
-                          }
-                        `}
-                        style={!isSelected ? nameStyle : undefined}
+                {isEditing ? (
+                  /* Edit Mode */
+                  <div className="space-y-3">
+                    <Input
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="Item name"
+                      className="h-12 rounded-xl bg-neutral-50 border-neutral-200 text-lg font-medium"
+                      autoFocus
+                    />
+                    <Input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      placeholder="Price"
+                      step="0.01"
+                      min="0"
+                      className="h-12 rounded-xl bg-neutral-50 border-neutral-200 text-lg font-medium"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={saveEdit}
+                        disabled={!editName.trim() || Number.parseFloat(editPrice) <= 0}
+                        className="flex-1 h-10 rounded-xl bg-success hover:bg-success/90 text-white"
                       >
-                        {name}
-                      </motion.button>
-                    );
-                  })}
-                </div>
-
-                {/* Per-person share */}
-                {hasParticipants && (
-                  <motion.p
-                    key={item.participants.length}
-                    initial={{ opacity: 0.5 }}
-                    animate={{ opacity: 1 }}
-                    className="mt-3 text-xs text-neutral-500"
-                  >
-                    {formatCurrency(item.price / item.participants.length, currency)} per person
-                  </motion.p>
-                )}
-
-                {!hasParticipants && (
-                  <div className="mt-3 flex items-center gap-2 text-warning text-xs font-medium bg-warning/20 px-3 py-1.5 rounded-lg w-fit">
-                    <AlertCircle className="w-3 h-3" />
-                    Assign to someone
+                        <Check className="w-4 h-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button
+                        onClick={cancelEdit}
+                        variant="outline"
+                        className="flex-1 h-10 rounded-xl border-neutral-200"
+                      >
+                        <X className="w-4 h-4 mr-1" />
+                        Cancel
+                      </Button>
+                    </div>
                   </div>
+                ) : (
+                  /* View Mode */
+                  <>
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h3 className="text-lg font-bold text-neutral-900 leading-tight">
+                          {item.name}
+                        </h3>
+                        <p className="text-2xl font-heading font-bold text-neutral-500 mt-1">
+                          {formatCurrency(item.price, currency)}
+                        </p>
+                      </div>
+                      <div className="flex gap-1 -mr-2 -mt-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => startEditing(item)}
+                          className="text-neutral-300 hover:text-brand-primary hover:bg-brand-primary/10 rounded-xl"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onRemoveItem(item.id)}
+                          className="text-neutral-300 hover:text-danger hover:bg-danger/10 rounded-xl"
+                        >
+                          <Trash2 className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Participants Chips */}
+                    <div className="flex flex-wrap gap-2">
+                      {names.map((name) => {
+                        const isSelected = item.participants.includes(name);
+                        const nameStyle = getNameStyle(name);
+                        return (
+                          <motion.button
+                            key={name}
+                            whileTap={{ scale: 0.92 }}
+                            onClick={() => onToggleItemParticipant(item.id, name)}
+                            className={`
+                              text-xs font-medium px-3 py-1.5 rounded-lg transition-colors
+                              ${
+                                isSelected
+                                  ? "bg-brand-primary text-white border border-brand-primary"
+                                  : "bg-transparent border border-neutral-200 text-neutral-500 hover:border-brand-primary/40 hover:text-neutral-700"
+                              }
+                            `}
+                            style={!isSelected ? nameStyle : undefined}
+                          >
+                            {name}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Per-person share */}
+                    {hasParticipants && (
+                      <motion.p
+                        key={item.participants.length}
+                        initial={{ opacity: 0.5 }}
+                        animate={{ opacity: 1 }}
+                        className="mt-3 text-xs text-neutral-500"
+                      >
+                        {formatCurrency(item.price / item.participants.length, currency)} per person
+                      </motion.p>
+                    )}
+
+                    {!hasParticipants && (
+                      <div className="mt-3 flex items-center gap-2 text-warning text-xs font-medium bg-warning/20 px-3 py-1.5 rounded-lg w-fit">
+                        <AlertCircle className="w-3 h-3" />
+                        Assign to someone
+                      </div>
+                    )}
+                  </>
                 )}
               </motion.div>
             );
