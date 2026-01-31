@@ -2,7 +2,6 @@ import type React from "react";
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
-import { FoodBackground } from "@/components/food-background";
 import { Footer } from "@/components/footer";
 import "./globals.css";
 
@@ -79,8 +78,6 @@ export default function RootLayout({
       >
         {/* Noise Texture Overlay */}
         <div className="fixed inset-0 z-50 pointer-events-none opacity-[0.05] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-repeat brightness-100 contrast-150"></div>
-
-        <FoodBackground />
 
         <div className="relative z-10 min-h-screen flex flex-col">
           {children}
