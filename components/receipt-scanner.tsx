@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { useReceiptScanner } from "@/hooks/use-receipt-scanner";
-import { detectCurrency, formatCurrency, DEFAULT_CURRENCY, type Currency } from "@/lib/currency";
+import { formatCurrency, DEFAULT_CURRENCY, type Currency } from "@/lib/currency";
 import {
   Camera,
   X,

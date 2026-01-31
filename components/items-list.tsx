@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AnimatedNumber } from "@/components/animated-number";
 import {
-  Calculator,
   ArrowLeft,
   ArrowRight,
   Trash2,

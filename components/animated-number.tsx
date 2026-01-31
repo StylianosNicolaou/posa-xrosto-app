@@ -16,6 +16,7 @@ export function AnimatedNumber({
   value,
   className = "",
   currency = DEFAULT_CURRENCY,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   decimals = 2,
   delay = 400,
 }: AnimatedNumberProps) {

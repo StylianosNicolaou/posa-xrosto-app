@@ -15,7 +15,7 @@ export function InstallPrompt() {
 
   useEffect(() => {
     // Check if iOS Safari
-    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     setIsIOS(iOS && isSafari);
 

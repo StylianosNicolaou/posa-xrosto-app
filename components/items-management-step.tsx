@@ -6,17 +6,13 @@ import { ItemsList } from "./items-list";
 import { ReceiptScanner } from "./receipt-scanner";
 import { ProgressBar } from "@/components/progress-bar";
 import { CurrencySelector } from "@/components/currency-selector";
-import { Button } from "@/components/ui/button";
-import { Camera, Plus, ArrowLeft } from "lucide-react";
 import type { Item } from "@/types";
 import type { Currency } from "@/lib/currency";
-import { motion } from "framer-motion";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 interface ItemsManagementStepProps {
