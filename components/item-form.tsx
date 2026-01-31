@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
+import { getNameStyle } from "@/lib/easter-egg";
 
 interface ItemFormProps {
   currentItem: { name: string; price: string };
@@ -74,6 +75,7 @@ export function ItemForm({
         <div className="flex flex-wrap gap-3">
           {names.map((name) => {
             const isSelected = selectedParticipants.includes(name);
+            const nameStyle = getNameStyle(name);
             return (
               <motion.button
                 key={name}
@@ -87,6 +89,7 @@ export function ItemForm({
                       : "bg-white border-neutral-200 text-neutral-700 hover:border-brand-primary/40"
                   }
                 `}
+                style={!isSelected ? nameStyle : undefined}
               >
                 {name}
               </motion.button>

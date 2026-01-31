@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type { Item } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
+import { getNameStyle } from "@/lib/easter-egg";
 
 interface ItemsListProps {
   items: Item[];
@@ -126,6 +127,7 @@ export function ItemsList({
                 <div className="flex flex-wrap gap-2">
                   {names.map((name) => {
                     const isSelected = item.participants.includes(name);
+                    const nameStyle = getNameStyle(name);
                     return (
                       <motion.button
                         key={name}
@@ -139,6 +141,7 @@ export function ItemsList({
                               : "bg-transparent border border-neutral-200 text-neutral-500 hover:border-brand-primary/40 hover:text-neutral-700"
                           }
                         `}
+                        style={!isSelected ? nameStyle : undefined}
                       >
                         {name}
                       </motion.button>

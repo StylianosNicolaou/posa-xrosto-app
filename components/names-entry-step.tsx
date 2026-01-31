@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ProgressBar } from "@/components/progress-bar";
 import { ArrowLeft, ArrowRight, Shuffle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { EASTER_EGG_NAME, getNameStyle } from "@/lib/easter-egg";
 
 const COLORS = [
   "Red",
@@ -50,6 +51,7 @@ const ANIMALS = [
   "Jaguar",
   "Shark",
   "Koala",
+  "Colibri",
 ];
 
 interface NamesEntryStepProps {
@@ -78,10 +80,22 @@ export function NamesEntryStep({
     const usedCombos = new Set<string>();
     const randomNames: string[] = [];
 
+    // 50% chance to include the easter egg "Green Colibri"
+    const includeEasterEgg = Math.random() < 0.5 && count > 0;
+    if (includeEasterEgg) {
+      randomNames.push(EASTER_EGG_NAME);
+      usedCombos.add(EASTER_EGG_NAME);
+    }
+
     while (randomNames.length < count) {
       const color = COLORS[Math.floor(Math.random() * COLORS.length)];
       const animal = ANIMALS[Math.floor(Math.random() * ANIMALS.length)];
       const combo = `${color} ${animal}`;
+
+      // Skip if it's "Green Colibri" generated randomly (we want it fixed, not random)
+      if (combo === EASTER_EGG_NAME) {
+        continue;
+      }
 
       if (!usedCombos.has(combo)) {
         usedCombos.add(combo);
@@ -144,6 +158,7 @@ export function NamesEntryStep({
                   onChange={(e) => updateName(index, e.target.value)}
                   placeholder={`Person ${index + 1}`}
                   className="h-14 pl-12 rounded-2xl bg-white border-neutral-200 text-lg font-medium text-neutral-900 placeholder:text-neutral-400 focus:bg-white focus:border-brand-primary transition-all shadow-sm"
+                  style={getNameStyle(name)}
                 />
               </motion.div>
             ))}

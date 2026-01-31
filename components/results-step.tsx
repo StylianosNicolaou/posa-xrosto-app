@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import type { PersonTotal } from "@/types";
 import { motion } from "framer-motion";
+import { getNameStyle } from "@/lib/easter-egg";
 
 interface ResultsStepProps {
   results: PersonTotal[];
@@ -137,7 +138,7 @@ export function ResultsStep({
               className="group bg-white border border-neutral-200 p-6 rounded-[2rem] hover:border-neutral-300 hover:shadow-lg transition-shadow duration-300 cursor-default"
             >
               <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-neutral-900">{person.name}</h3>
+                <h3 className="text-xl font-bold text-neutral-900" style={getNameStyle(person.name)}>{person.name}</h3>
                 <AnimatedNumber
                   value={person.total}
                   className="text-2xl font-heading font-bold text-brand-primary"
